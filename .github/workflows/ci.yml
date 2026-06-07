@@ -29,6 +29,9 @@ jobs:
       - name: Type check
         run: deno task check
 
+      - name: Test
+        run: deno task test
+
   frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -49,6 +52,9 @@ jobs:
 
       - name: Type check
         run: npx tsc --noEmit
+
+      - name: Test
+        run: npm test
 
       - name: Build
         run: npm run build
