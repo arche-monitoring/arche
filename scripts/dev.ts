@@ -16,6 +16,7 @@ const backendCmd = new Deno.Command(Deno.execPath(), {
     "--watch",
     "backend/main.ts",
   ],
+  env: { ARCHE_DEV: "true" },
   stdout: "inherit",
   stderr: "inherit",
 });
