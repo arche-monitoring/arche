@@ -85,7 +85,7 @@ export default function Settings() {
           <p className="text-sm text-muted-foreground">Configure notifications and general options.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => refreshFavicons.mutate()} disabled={refreshFavicons.isPending}>
+          <Button variant="secondary" onClick={() => refreshFavicons.mutate()} disabled={refreshFavicons.isPending}>
             <RefreshCw className={`h-4 w-4 mr-2 ${refreshFavicons.isPending ? "animate-spin" : ""}`} />
             {refreshFavicons.isPending ? "Refreshing..." : "Refresh Favicons"}
           </Button>
@@ -130,10 +130,6 @@ export default function Settings() {
                     placeholder="-1001234567890"
                   />
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  You can also set these via <code className="text-primary">TELEGRAM_BOT_TOKEN</code> and{" "}
-                  <code className="text-primary">TELEGRAM_CHAT_ID</code> environment variables.
-                </div>
               </CardContent>
             </Card>
 
@@ -153,10 +149,6 @@ export default function Settings() {
                     onChange={(e) => setDiscordWebhookUrl(e.target.value)}
                     placeholder="https://discord.com/api/webhooks/..."
                   />
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  You can also set this via{" "}
-                  <code className="text-primary">DISCORD_WEBHOOK_URL</code> environment variable.
                 </div>
               </CardContent>
             </Card>
@@ -184,9 +176,8 @@ export default function Settings() {
                 </div>
               </CardContent>
             </Card>
-          </div>
 
-          <Card>
+            <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Key className="h-5 w-5" />
@@ -248,6 +239,7 @@ export default function Settings() {
               </form>
             </CardContent>
           </Card>
+          </div>
         </div>
       )}
     </div>
