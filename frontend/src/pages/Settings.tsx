@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react"
-import { useSettings, useUpdateSettings } from "@/hooks/use-monitors"
+import { useSettings, useUpdateSettings, useRefreshAllFavicons } from "@/hooks/use-monitors"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Save } from "lucide-react"
+import { Save, RefreshCw } from "lucide-react"
 
 export default function Settings() {
   const { data: settings, isLoading } = useSettings()
   const updateSettings = useUpdateSettings()
+  const refreshFavicons = useRefreshAllFavicons()
 
   const [telegramToken, setTelegramToken] = useState("")
   const [telegramChatId, setTelegramChatId] = useState("")
@@ -41,10 +42,16 @@ export default function Settings() {
           <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
           <p className="text-sm text-muted-foreground">Configure notifications and general options.</p>
         </div>
-        <Button onClick={handleSave} disabled={updateSettings.isPending}>
-          <Save className="h-4 w-4 mr-2" />
-          {updateSettings.isPending ? "Saving..." : "Save Settings"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => refreshFavicons.mutate()} disabled={refreshFavicons.isPending}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${refreshFavicons.isPending ? "animate-spin" : ""}`} />
+            {refreshFavicons.isPending ? "Refreshing..." : "Refresh Favicons"}
+          </Button>
+          <Button onClick={handleSave} disabled={updateSettings.isPending}>
+            <Save className="h-4 w-4 mr-2" />
+            {updateSettings.isPending ? "Saving..." : "Save Settings"}
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (

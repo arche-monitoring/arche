@@ -30,6 +30,10 @@ export const api = {
       }),
     delete: (id: number) =>
       request<void>(`/monitors/${id}`, { method: "DELETE" }),
+    refreshFavicon: (id: number) =>
+      request<{ favicon: string | null }>(`/monitors/${id}/refresh-favicon`, { method: "POST" }),
+    refreshAllFavicons: () =>
+      request<void>("/monitors/refresh-favicons", { method: "POST" }),
   },
   checks: {
     latest: () => request<Check[]>("/checks/latest"),

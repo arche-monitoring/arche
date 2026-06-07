@@ -9,6 +9,7 @@ import { checkDns } from "../monitors/dns.ts";
 import { checkTcp } from "../monitors/tcp.ts";
 import { sendTelegramAlert } from "./telegram.ts";
 import { sendDiscordAlert } from "./discord.ts";
+import { refreshMonitorFavicon } from "./favicon.ts";
 import { logger } from "../utils/logger.ts";
 import { desc, eq, lt } from "drizzle-orm";
 import type { CheckResult } from "../monitors/ping.ts";
@@ -97,6 +98,7 @@ async function runCheck(monitor: MonitorRow): Promise<CheckResult> {
 }
 
 const RETENTION_CLEANUP_INTERVAL = 60; // cleanup every 60 ticks (every 10 minutes)
+const FAVICON_REFRESH_INTERVAL = 3600; // check favicons every 3600 ticks (every 10 hours)
 
 async function cleanupOldChecks() {
   try {
@@ -114,6 +116,22 @@ async function cleanupOldChecks() {
     logger.info(`Cleaned up checks older than ${retentionDays} days`);
   } catch (err) {
     logger.error(`Retention cleanup failed: ${err}`);
+  }
+}
+
+async function refreshStaleFavicons() {
+  try {
+    const db = await getDb();
+    const allMonitors = await db.select().from(monitors);
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    for (const m of allMonitors) {
+      const row = m as { id: number; favicon: string | null; faviconUpdatedAt: string | null };
+      if (!row.favicon || !row.faviconUpdatedAt || row.faviconUpdatedAt < cutoff) {
+        await refreshMonitorFavicon(row.id);
+      }
+    }
+  } catch (err) {
+    logger.error(`Favicon refresh failed: ${err}`);
   }
 }
 
@@ -182,6 +200,9 @@ const lastTime = new Date(raw.endsWith("Z") ? raw : raw.replace(" ", "T") + "Z")
       tickCount++;
       if (tickCount % RETENTION_CLEANUP_INTERVAL === 0) {
         cleanupOldChecks();
+      }
+      if (tickCount % FAVICON_REFRESH_INTERVAL === 0) {
+        refreshStaleFavicons();
       }
     } catch (err) {
       logger.error(`Scheduler tick failed: ${err}`);

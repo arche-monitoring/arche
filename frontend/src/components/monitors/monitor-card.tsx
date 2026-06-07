@@ -45,8 +45,11 @@ export function MonitorCard({ monitor }: MonitorCardProps) {
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
-              {typeIcons[monitor.type] || <Globe className="h-4 w-4" />}
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted overflow-hidden">
+              {monitor.favicon
+                ? <img src={monitor.favicon} alt="" className="h-6 w-6" />
+                : typeIcons[monitor.type] || <Globe className="h-4 w-4" />
+              }
             </div>
             <div>
               <p className="text-sm font-medium leading-none">{monitor.name}</p>

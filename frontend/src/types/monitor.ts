@@ -13,6 +13,8 @@ export interface Monitor {
   interval: number
   timeout: number
   active: number
+  favicon: string | null
+  faviconUpdatedAt: string | null
   createdAt: string
   updatedAt: string
   last_status: string | null

@@ -40,7 +40,15 @@ export function MonitorList({ monitors, onEdit, onDelete }: MonitorListProps) {
       <TableBody>
         {monitors.map((m) => (
           <TableRow key={m.id} className="cursor-pointer" onClick={() => navigate(`/monitors/${m.id}`)}>
-            <TableCell className="font-medium">{m.name}</TableCell>
+            <TableCell className="font-medium">
+              <div className="flex items-center gap-2">
+                {m.favicon
+                  ? <img src={m.favicon} alt="" className="h-4 w-4" />
+                  : null
+                }
+                {m.name}
+              </div>
+            </TableCell>
             <TableCell>
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 {typeIcons[m.type]}

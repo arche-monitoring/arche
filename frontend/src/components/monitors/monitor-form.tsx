@@ -79,15 +79,20 @@ export function MonitorForm({ open, onOpenChange, onSubmit, editMonitor }: Monit
         </DialogHeader>
 
         <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={form.name}
-              onChange={(e) => update("name", e.target.value)}
-              placeholder="My Service"
-              required
-            />
+          <div className="flex items-center gap-3">
+            {editMonitor?.favicon && (
+              <img src={editMonitor.favicon} alt="" className="h-8 w-8 rounded" />
+            )}
+            <div className="flex-1 grid gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={form.name}
+                onChange={(e) => update("name", e.target.value)}
+                placeholder="My Service"
+                required
+              />
+            </div>
           </div>
 
           <div className="grid gap-2">

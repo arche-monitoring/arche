@@ -56,6 +56,22 @@ export function useDeleteMonitor() {
   })
 }
 
+export function useRefreshFavicon() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => api.monitors.refreshFavicon(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["monitors"] }),
+  })
+}
+
+export function useRefreshAllFavicons() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => api.monitors.refreshAllFavicons(),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["monitors"] }),
+  })
+}
+
 export function useSettings() {
   return useQuery({
     queryKey: ["settings"],

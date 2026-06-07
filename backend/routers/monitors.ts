@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { desc, eq, inArray } from "drizzle-orm";
 import { getDb } from "../database/client.ts";
 import { checks, monitors } from "../database/schema.ts";
+import { refreshMonitorFavicon, refreshAllFavicons } from "../services/favicon.ts";
 
 const router = new Hono();
 
@@ -39,6 +40,17 @@ router.get("/", async (c) => {
   return c.json(result);
 });
 
+router.post("/refresh-favicons", (c) => {
+  refreshAllFavicons();
+  return c.json({ success: true });
+});
+
+router.post("/:id/refresh-favicon", async (c) => {
+  const id = parseInt(c.req.param("id"), 10);
+  const favicon = await refreshMonitorFavicon(id);
+  return c.json({ favicon });
+});
+
 router.get("/:id", async (c) => {
   const id = parseInt(c.req.param("id"), 10);
   const db = await getDb();
@@ -62,7 +74,9 @@ router.post("/", async (c) => {
     interval: body.interval || 60,
     timeout: body.timeout || 30,
   }).returning();
-  return c.json(result[0], 201);
+  const monitor = result[0] as { id: number };
+  refreshMonitorFavicon(monitor.id);
+  return c.json(monitor, 201);
 });
 
 router.put("/:id", async (c) => {

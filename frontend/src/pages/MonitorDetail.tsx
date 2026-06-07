@@ -68,8 +68,11 @@ export default function MonitorDetail() {
         <>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                {typeIcons[monitor.type]}
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted overflow-hidden">
+                {monitor.favicon
+                  ? <img src={monitor.favicon} alt="" className="h-7 w-7" />
+                  : typeIcons[monitor.type]
+                }
               </div>
               <div>
                 <h1 className="text-2xl font-semibold tracking-tight">{monitor.name}</h1>
