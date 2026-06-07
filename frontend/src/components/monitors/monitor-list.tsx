@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { MonitorStatusBadge } from "./monitor-status-badge"
 import type { Monitor } from "@/types/monitor"
 import { Pencil, Trash2, Globe, Terminal, Server, Mail, MessageSquare } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 const typeIcons: Record<string, React.ReactNode> = {
   ping: <Terminal className="h-3.5 w-3.5" />,
@@ -19,6 +20,8 @@ interface MonitorListProps {
 }
 
 export function MonitorList({ monitors, onEdit, onDelete }: MonitorListProps) {
+  const navigate = useNavigate()
+
   return (
     <Table>
       <TableHeader>
@@ -34,7 +37,7 @@ export function MonitorList({ monitors, onEdit, onDelete }: MonitorListProps) {
       </TableHeader>
       <TableBody>
         {monitors.map((m) => (
-          <TableRow key={m.id}>
+          <TableRow key={m.id} className="cursor-pointer" onClick={() => navigate(`/monitors/${m.id}`)}>
             <TableCell className="font-medium">{m.name}</TableCell>
             <TableCell>
               <div className="flex items-center gap-1.5 text-muted-foreground">
@@ -50,10 +53,10 @@ export function MonitorList({ monitors, onEdit, onDelete }: MonitorListProps) {
             <TableCell className="text-xs text-muted-foreground">{m.interval}s</TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-1">
-                <Button variant="ghost" size="icon" onClick={() => onEdit(m)}>
+                <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); onEdit(m) }}>
                   <Pencil className="h-3.5 w-3.5" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => onDelete(m.id)}>
+                <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(m.id) }}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
