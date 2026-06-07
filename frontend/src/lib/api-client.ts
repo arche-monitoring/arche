@@ -2,9 +2,18 @@ import type { Monitor, MonitorFormData, Check, UptimeData, StatusPage, StatusPag
 
 const BASE = "/api"
 
+function getToken(): string | null {
+  try { return localStorage.getItem("auth_token") } catch { return null }
+}
+
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" }
+  const token = getToken()
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`
+  }
   const res = await fetch(`${BASE}${url}`, {
-    headers: { "Content-Type": "application/json" },
+    headers,
     ...options,
   })
   if (!res.ok) {
@@ -15,6 +24,27 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  auth: {
+    login: (username: string, password: string) =>
+      request<{ token: string; username: string }>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+      }),
+    logout: () =>
+      request<void>("/auth/logout", { method: "POST" }),
+    me: () =>
+      request<{ authenticated: boolean; username?: string; setupRequired?: boolean }>("/auth/me"),
+    setup: (username: string, password: string) =>
+      request<{ token: string; username: string }>("/auth/setup", {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+      }),
+    changeCredentials: (currentPassword: string, newUsername: string, newPassword: string) =>
+      request<{ token: string; username: string }>("/auth/change-credentials", {
+        method: "POST",
+        body: JSON.stringify({ currentPassword, newUsername, newPassword }),
+      }),
+  },
   monitors: {
     list: () => request<Monitor[]>("/monitors"),
     get: (id: number) => request<Monitor>(`/monitors/${id}`),

@@ -8,6 +8,8 @@ import { checksRouter } from "./routers/checks.ts";
 import { settingsRouter } from "./routers/settings.ts";
 import { statusPagesRouter } from "./routers/status-pages.ts";
 import { publicRouter } from "./routers/public.ts";
+import { authRouter } from "./routers/auth.ts";
+import { authMiddleware } from "./middleware/auth.ts";
 import { startScheduler, stopScheduler } from "./services/scheduler.ts";
 
 const app = new Hono();
@@ -20,6 +22,9 @@ app.use(
   }),
 );
 
+app.use("/*", authMiddleware);
+
+app.route("/api/auth", authRouter);
 app.route("/api/monitors", monitorsRouter);
 app.route("/api/checks", checksRouter);
 app.route("/api/settings", settingsRouter);
