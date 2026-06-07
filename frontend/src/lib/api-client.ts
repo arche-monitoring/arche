@@ -7,14 +7,15 @@ function getToken(): string | null {
 }
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
-  const headers: Record<string, string> = { "Content-Type": "application/json" }
   const token = getToken()
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options?.headers as Record<string, string>),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   }
   const res = await fetch(`${BASE}${url}`, {
-    headers,
     ...options,
+    headers,
   })
   if (!res.ok) {
     const err = await res.text()

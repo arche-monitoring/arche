@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -54,6 +54,26 @@ export function MonitorForm({ open, onOpenChange, onSubmit, editMonitor }: Monit
     }
     return { ...defaultForm }
   })
+
+  useEffect(() => {
+    if (!open) return
+    if (editMonitor) {
+      setForm({
+        name: editMonitor.name,
+        type: editMonitor.type,
+        target: editMonitor.target,
+        port: editMonitor.port?.toString() || "",
+        username: editMonitor.username || "",
+        password: editMonitor.password || "",
+        method: editMonitor.method || "GET",
+        expected_status: editMonitor.expectedStatus?.toString() || "200",
+        interval: editMonitor.interval.toString(),
+        timeout: editMonitor.timeout.toString(),
+      })
+    } else {
+      setForm({ ...defaultForm })
+    }
+  }, [open])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

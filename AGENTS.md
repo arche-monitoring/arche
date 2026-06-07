@@ -31,6 +31,10 @@ deno task fmt:fix
 deno task check        # backend only (deno check)
 deno task check:all    # backend + frontend (npx tsc --noEmit)
 
+# Testing
+deno task test         # backend tests (Deno test runner)
+npm test               # frontend tests (vitest) — run from frontend/
+
 # DB migrations (Drizzle Kit via npm)
 deno task db:generate
 deno task db:push
@@ -44,9 +48,11 @@ deno task start
 - **DB auto-migrates on startup** — `drizzle-orm/sqlite-proxy/migrator` runs all
   pending migrations when the server starts. `db:generate` / `db:push` are only
   needed during schema development.
-- **No tests exist** anywhere in the repo. Do not look for test files or test
-  commands.
-- **No CI/CD** configured. No `.github/` directory.
+- **Tests** exist in `backend/` (Deno test runner, `*_test.ts`) and `frontend/src/`
+  (vitest + React Testing Library, `*.test.ts`/`.test.tsx`). Run with
+  `deno task test` and `npm test` respectively.
+- **CI/CD** configured in `.github/workflows/ci.yml` — runs lint, format, type
+  checks, tests, and frontend build on push/PR to main.
 - **Permissions:** The backend always needs
   `--allow-net --allow-read --allow-write --allow-env --allow-run --allow-sys`.
   The `deno task` commands include these; always include them when running

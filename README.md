@@ -38,10 +38,54 @@ docker run -p 3000:3000 -v arche_data:/app/data --restart=always ghcr.io/arche-m
 
 Just open your browser at http://localhost:3000 and you are good to go.
 
-## Docs
+## Architecture
 
-- [Commands & conventions](AGENTS.md)
-- [Contributing](CONTRIBUTING.md)
+```
+┌─────────────────────────────────────────────────────┐
+│                   Browser (React SPA)               │
+│  ┌───────────────────────────────────────────────┐  │
+│  │  React 18 · React Router · TanStack Query     │  │
+│  │  Tailwind CSS · shadcn/ui · Recharts          │  │
+│  └──────────────┬────────────────────────────────┘  │
+│                 │ /api/* (Vite proxy → :3000)       │
+└─────────────────┼───────────────────────────────────┘
+                  │
+┌─────────────────┼────────────────────────────────────┐
+│  Deno 2 · Hono  │  (backend — port 3000)             │
+│                 ▼                                    │
+│  ┌──────────────────────────────┐                    │
+│  │  Auth Middleware             │                    │
+│  │  (PBKDF2 + Bearer tokens)   │                     │
+│  └──────┬───────────────────────┘                    │
+│         │                                            │
+│  ┌──────▼───────────────────────┐                    │
+│  │  Routers                     │                    │
+│  │  auth · monitors · checks    │                    │
+│  │  settings · status-pages     │                    │
+│  │  public                      │                    │
+│  └──────┬───────────────────────┘                    │
+│         │                                            │
+│  ┌──────▼───────────────────────┐  ┌──────────────┐  │
+│  │  Check Implementations       │  │  Scheduler   │  │
+│  │  HTTP · Ping · TCP · Port    │◄─┤  (10s tick)  │  │
+│  │  DNS · IMAP · SMTP           │  └──────────────┘  │
+│  └──────┬───────────────────────┘                    │
+│         │                                            │
+│  ┌──────▼───────────────────────┐  ┌──────────────┐  │
+│  │  Drizzle ORM + SQLite        │  │  Alert       │  │
+│  │  (auto-migrate on startup)   │  │  Telegram    │  │
+│  └──────────────────────────────┘  │  Discord     │  │
+│                                    └──────────────┘  │
+└──────────────────────────────────────────────────────┘
+```
+
+### Data flow
+
+1. **Scheduler** ticks every 10 seconds, checks for monitors due for a check.
+2. Each due monitor runs its check implementation (HTTP, Ping, etc.) and stores the result (status, latency, error) in the `checks` table.
+3. If the monitor's status changed since the last check, alerts are dispatched via Telegram and/or Discord (if configured).
+4. The frontend polls `/api/monitors` and `/api/checks/latest` to display live status, or fetches per-monitor check history for the detail view.
+5. Status pages are served publicly via `/api/public/status-page/:slug` — no auth required.
 
 ## License
 
