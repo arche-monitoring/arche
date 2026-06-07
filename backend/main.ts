@@ -25,7 +25,7 @@ app.route("/api/settings", settingsRouter);
 app.get("/api/health", (c) => c.json({ status: "ok" }));
 
 const config = loadConfig();
-getDb();
+await getDb();
 
 startScheduler();
 

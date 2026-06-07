@@ -7,6 +7,8 @@
     "lint:fix": "deno lint --fix",
     "fmt": "deno fmt --check",
     "fmt:fix": "deno fmt",
+    "db:generate": "deno run -A npm:drizzle-kit@0.30.0 generate --config=backend/database/drizzle.config.ts",
+    "db:push": "deno run -A npm:drizzle-kit@0.30.0 push --config=backend/database/drizzle.config.ts",
     "check": "deno check backend/main.ts",
     "check:all": "deno check backend/main.ts && cd frontend && npx tsc --noEmit"
   },

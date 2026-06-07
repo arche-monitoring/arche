@@ -30,12 +30,12 @@ interface MonitorRow {
 const previousStatuses: Record<number, string> = {};
 
 async function getActiveMonitors(): Promise<MonitorRow[]> {
-  const db = getDb();
+  const db = await getDb();
   return await db.select().from(monitors).where(eq(monitors.active, 1));
 }
 
 async function saveCheck(monitorId: number, result: CheckResult) {
-  const db = getDb();
+  const db = await getDb();
   await db.insert(checks).values({
     monitorId,
     status: result.status,
@@ -92,7 +92,7 @@ export function startScheduler() {
 
   const runDueMonitors = async () => {
     const activeMonitors = await getActiveMonitors();
-    const db = getDb();
+    const db = await getDb();
 
     for (const monitor of activeMonitors) {
       const lastCheck = await db.select({ checkedAt: checks.checkedAt })

@@ -6,7 +6,7 @@ import { checks, monitors } from "../database/schema.ts";
 const router = new Hono();
 
 router.get("/", async (c) => {
-  const db = getDb();
+  const db = await getDb();
   const allMonitors = await db.select().from(monitors).orderBy(
     desc(monitors.createdAt),
   );
@@ -41,7 +41,7 @@ router.get("/", async (c) => {
 
 router.get("/:id", async (c) => {
   const id = parseInt(c.req.param("id"), 10);
-  const db = getDb();
+  const db = await getDb();
   const rows = await db.select().from(monitors).where(eq(monitors.id, id));
   if (rows.length === 0) return c.json({ error: "Not found" }, 404);
   return c.json(rows[0]);
@@ -49,7 +49,7 @@ router.get("/:id", async (c) => {
 
 router.post("/", async (c) => {
   const body = await c.req.json();
-  const db = getDb();
+  const db = await getDb();
   const result = await db.insert(monitors).values({
     name: body.name,
     type: body.type,
@@ -68,7 +68,7 @@ router.post("/", async (c) => {
 router.put("/:id", async (c) => {
   const id = parseInt(c.req.param("id"), 10);
   const body = await c.req.json();
-  const db = getDb();
+  const db = await getDb();
   await db.update(monitors)
     .set({
       name: body.name,
@@ -89,7 +89,7 @@ router.put("/:id", async (c) => {
 
 router.delete("/:id", async (c) => {
   const id = parseInt(c.req.param("id"), 10);
-  const db = getDb();
+  const db = await getDb();
   await db.delete(monitors).where(eq(monitors.id, id));
   return c.json({ success: true });
 });

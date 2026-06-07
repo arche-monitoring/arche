@@ -5,7 +5,7 @@ import { settings } from "../database/schema.ts";
 const router = new Hono();
 
 router.get("/", async (c) => {
-  const db = getDb();
+  const db = await getDb();
   const rows = await db.select().from(settings);
   const result: Record<string, string> = {};
   for (const row of rows) {
@@ -16,7 +16,7 @@ router.get("/", async (c) => {
 
 router.put("/", async (c) => {
   const body = await c.req.json() as Record<string, string>;
-  const db = getDb();
+  const db = await getDb();
   for (const [key, value] of Object.entries(body)) {
     await db.insert(settings)
       .values({ key, value })
