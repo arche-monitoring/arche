@@ -30,12 +30,8 @@ export async function getDb() {
           "METHOD:",
           method,
         );
-        if (method === "values") {
-          const rows = rawDb!.query(sql, params as Params);
-          return { rows: rows as unknown as Record<string, unknown>[] };
-        }
-        const rows = rawDb!.queryEntries(sql, params as Params);
-        return { rows: rows as Record<string, unknown>[] };
+        const rows = rawDb!.query(sql, params as Params);
+        return { rows: rows as unknown as Record<string, unknown>[] };
       } catch (e) {
         logger.error("SQL error:", e);
         throw e;
