@@ -34,31 +34,37 @@ app.route("/api/public", publicRouter);
 
 app.get("/api/health", (c) => c.json({ status: "ok" }));
 
-const staticOpts = {
-  root: "./frontend/dist",
-  getContent: async (path: string) => {
-    try {
-      return await Deno.readFile(path);
-    } catch {
-      return null;
+const isDev = Deno.env.get("ARCHE_DEV") === "true";
+
+if (isDev) {
+  app.get("/", (c) => c.redirect("http://localhost:5173"));
+} else {
+  const staticOpts = {
+    root: "./frontend/dist",
+    getContent: async (path: string) => {
+      try {
+        return await Deno.readFile(path);
+      } catch {
+        return null;
+      }
+    },
+  };
+
+  app.use("/assets/*", serveStatic(staticOpts));
+  app.use("/favicon.svg", serveStatic(staticOpts));
+
+  app.get("/*", async (c) => {
+    if (c.req.path.startsWith("/api/")) {
+      return c.json({ error: "Not found" }, 404);
     }
-  },
-};
-
-app.use("/assets/*", serveStatic(staticOpts));
-app.use("/favicon.svg", serveStatic(staticOpts));
-
-app.get("/*", async (c) => {
-  if (c.req.path.startsWith("/api/")) {
-    return c.json({ error: "Not found" }, 404);
-  }
-  try {
-    const content = await Deno.readFile("./frontend/dist/index.html");
-    return c.html(new TextDecoder().decode(content));
-  } catch {
-    return c.text("Frontend not built. Run: cd frontend && npm run build", 503);
-  }
-});
+    try {
+      const content = await Deno.readFile("./frontend/dist/index.html");
+      return c.html(new TextDecoder().decode(content));
+    } catch {
+      return c.text("Frontend not built. Run: cd frontend && npm run build", 503);
+    }
+  });
+}
 
 const config = loadConfig();
 await getDb();
