@@ -14,12 +14,14 @@ export default function Settings() {
   const [telegramToken, setTelegramToken] = useState("")
   const [telegramChatId, setTelegramChatId] = useState("")
   const [discordWebhookUrl, setDiscordWebhookUrl] = useState("")
+  const [retentionDays, setRetentionDays] = useState("365")
 
   useEffect(() => {
     if (settings) {
       setTelegramToken(settings.telegram_bot_token || "")
       setTelegramChatId(settings.telegram_chat_id || "")
       setDiscordWebhookUrl(settings.discord_webhook_url || "")
+      setRetentionDays(settings.retention_days || "365")
     }
   }, [settings])
 
@@ -28,6 +30,7 @@ export default function Settings() {
       telegram_bot_token: telegramToken,
       telegram_chat_id: telegramChatId,
       discord_webhook_url: discordWebhookUrl,
+      retention_days: retentionDays,
     })
   }
 
@@ -98,6 +101,30 @@ export default function Settings() {
               <div className="text-xs text-muted-foreground">
                 You can also set this via{" "}
                 <code className="text-primary">DISCORD_WEBHOOK_URL</code> environment variable.
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Data Retention</CardTitle>
+              <CardDescription>
+                Automatically delete check history older than this many days.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="retentionDays">Retention (days)</Label>
+                <Input
+                  id="retentionDays"
+                  type="number"
+                  min={1}
+                  value={retentionDays}
+                  onChange={(e) => setRetentionDays(e.target.value)}
+                />
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Old checks are pruned every 10 minutes. Defaults to 365 days (1 year).
               </div>
             </CardContent>
           </Card>

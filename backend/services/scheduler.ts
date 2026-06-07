@@ -1,5 +1,5 @@
 import { getDb } from "../database/client.ts";
-import { checks, monitors } from "../database/schema.ts";
+import { checks, monitors, settings } from "../database/schema.ts";
 import { checkPing } from "../monitors/ping.ts";
 import { checkHttp } from "../monitors/http.ts";
 import { checkPort } from "../monitors/port.ts";
@@ -10,7 +10,7 @@ import { checkTcp } from "../monitors/tcp.ts";
 import { sendTelegramAlert } from "./telegram.ts";
 import { sendDiscordAlert } from "./discord.ts";
 import { logger } from "../utils/logger.ts";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, lt } from "drizzle-orm";
 import type { CheckResult } from "../monitors/ping.ts";
 
 interface MonitorRow {
@@ -96,7 +96,29 @@ async function runCheck(monitor: MonitorRow): Promise<CheckResult> {
   }
 }
 
+const RETENTION_CLEANUP_INTERVAL = 60; // cleanup every 60 ticks (every 10 minutes)
+
+async function cleanupOldChecks() {
+  try {
+    const db = await getDb();
+    const rows = await db.select()
+      .from(settings)
+      .where(eq(settings.key, "retention_days"))
+      .limit(1);
+    const retentionDays = rows.length > 0 ? parseInt(rows[0].value, 10) : 365;
+    if (isNaN(retentionDays) || retentionDays < 1) return;
+
+    const cutoff = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000).toISOString();
+    await db.delete(checks)
+      .where(lt(checks.checkedAt, cutoff));
+    logger.info(`Cleaned up checks older than ${retentionDays} days`);
+  } catch (err) {
+    logger.error(`Retention cleanup failed: ${err}`);
+  }
+}
+
 let tickInterval: number | null = null;
+let tickCount = 0;
 
 export function startScheduler() {
   const tickMs = 10_000;
@@ -155,6 +177,11 @@ const lastTime = new Date(raw.endsWith("Z") ? raw : raw.replace(" ", "T") + "Z")
             `Error checking ${monitor.name}: ${monitorErr}`,
           );
         }
+      }
+
+      tickCount++;
+      if (tickCount % RETENTION_CLEANUP_INTERVAL === 0) {
+        cleanupOldChecks();
       }
     } catch (err) {
       logger.error(`Scheduler tick failed: ${err}`);
