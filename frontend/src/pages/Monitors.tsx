@@ -4,6 +4,15 @@ import { MonitorList } from "@/components/monitors/monitor-list"
 import { MonitorForm } from "@/components/monitors/monitor-form"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import {
+  AlertDialog,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog"
 import type { Monitor, MonitorFormData } from "@/types/monitor"
 import { Plus } from "lucide-react"
 
@@ -15,6 +24,7 @@ export default function Monitors() {
 
   const [formOpen, setFormOpen] = useState(false)
   const [editingMonitor, setEditingMonitor] = useState<Monitor | null>(null)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
 
   const handleSubmit = (data: MonitorFormData) => {
     if (editingMonitor) {
@@ -32,8 +42,13 @@ export default function Monitors() {
   }
 
   const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this monitor?")) {
-      deleteMonitor.mutate(id)
+    setDeletingId(id)
+  }
+
+  const confirmDelete = () => {
+    if (deletingId !== null) {
+      deleteMonitor.mutate(deletingId)
+      setDeletingId(null)
     }
   }
 
@@ -72,6 +87,19 @@ export default function Monitors() {
         onSubmit={handleSubmit}
         editMonitor={editingMonitor}
       />
+
+      <AlertDialog open={deletingId !== null} onOpenChange={() => setDeletingId(null)}>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete Monitor</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to delete this monitor? This action cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={() => setDeletingId(null)}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialog>
     </div>
   )
 }

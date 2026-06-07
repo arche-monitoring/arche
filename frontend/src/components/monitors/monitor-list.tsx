@@ -42,7 +42,7 @@ export function MonitorList({ monitors, onEdit, onDelete }: MonitorListProps) {
             <TableCell>
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 {typeIcons[m.type]}
-                <span className="capitalize text-xs">{m.type}</span>
+                <span className="uppercase text-xs">{m.type}</span>
               </div>
             </TableCell>
             <TableCell className="text-muted-foreground text-xs">{m.target}</TableCell>

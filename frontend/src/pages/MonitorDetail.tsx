@@ -32,7 +32,7 @@ export default function MonitorDetail() {
     .slice()
     .reverse()
     .map((c) => ({
-      time: new Date(c.checked_at).toLocaleTimeString(),
+      time: c.checked_at ? new Date(c.checked_at.replace(" ", "T")).toLocaleTimeString() : "",
       response: c.response_time_ms,
       status: c.status,
     }))
@@ -158,7 +158,7 @@ export default function MonitorDetail() {
                       )}
                     </div>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(check.checked_at).toLocaleString()}
+                      {check.checked_at ? new Date(check.checked_at.replace(" ", "T")).toLocaleString() : "—"}
                     </span>
                   </div>
                 ))}

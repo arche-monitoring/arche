@@ -43,10 +43,10 @@ export function MonitorCard({ monitor }: MonitorCardProps) {
         </div>
         <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
           <span>{responseTime}</span>
-          <span className="capitalize">{monitor.type}</span>
+          <span className="uppercase">{monitor.type}</span>
           {monitor.last_checked_at && (
             <span>
-              {new Date(monitor.last_checked_at).toLocaleTimeString()}
+              {new Date(monitor.last_checked_at.replace(" ", "T")).toLocaleTimeString()}
             </span>
           )}
         </div>
