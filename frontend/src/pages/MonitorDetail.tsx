@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useMonitor, useChecks, useUptime } from "@/hooks/use-monitors"
 import { MonitorStatusBadge } from "@/components/monitors/monitor-status-badge"
@@ -27,6 +28,18 @@ export default function MonitorDetail() {
   const { data: uptime24h } = useUptime(monitorId, "24h")
   const { data: uptime7d } = useUptime(monitorId, "7d")
   const { data: uptime30d } = useUptime(monitorId, "30d")
+
+  const responseStats = useMemo(() => {
+    const times = (checks ?? [])
+      .map((c) => c.responseTimeMs)
+      .filter((t): t is number => t !== null)
+    if (times.length === 0) return null
+    return {
+      min: Math.min(...times),
+      max: Math.max(...times),
+      avg: Math.round(times.reduce((a, b) => a + b, 0) / times.length),
+    }
+  }, [checks])
 
   const chartData = (checks ?? [])
     .slice()
@@ -68,15 +81,7 @@ export default function MonitorDetail() {
             } />
           </div>
 
-          <div className="grid gap-4 md:grid-cols-4">
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Response Time</CardTitle></CardHeader>
-              <CardContent>
-                <p className="text-xl font-bold">
-                  {checks?.[0]?.responseTimeMs ? `${checks[0].responseTimeMs}ms` : "—"}
-                </p>
-              </CardContent>
-            </Card>
+          <div className="grid gap-4 md:grid-cols-3">
             <Card>
               <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">24h Uptime</CardTitle></CardHeader>
               <CardContent>
@@ -93,6 +98,34 @@ export default function MonitorDetail() {
               <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">30d Uptime</CardTitle></CardHeader>
               <CardContent>
                 <p className="text-xl font-bold">{uptime30d?.uptime ?? 100}%</p>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-4 md:grid-cols-4">
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Latest</CardTitle></CardHeader>
+              <CardContent>
+                <p className="text-xl font-bold">
+                  {checks?.[0]?.responseTimeMs ? `${checks[0].responseTimeMs}ms` : "—"}
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Min</CardTitle></CardHeader>
+              <CardContent>
+                <p className="text-xl font-bold">{responseStats ? `${responseStats.min}ms` : "—"}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Avg</CardTitle></CardHeader>
+              <CardContent>
+                <p className="text-xl font-bold">{responseStats ? `${responseStats.avg}ms` : "—"}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Max</CardTitle></CardHeader>
+              <CardContent>
+                <p className="text-xl font-bold">{responseStats ? `${responseStats.max}ms` : "—"}</p>
               </CardContent>
             </Card>
           </div>
