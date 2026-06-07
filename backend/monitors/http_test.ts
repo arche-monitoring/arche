@@ -3,7 +3,7 @@ import { checkHttp } from "./http.ts";
 
 Deno.test("checkHttp returns up when status matches expected", async () => {
   const origFetch = globalThis.fetch;
-  globalThis.fetch = async () => new Response("OK", { status: 200 });
+  globalThis.fetch = () => new Response("OK", { status: 200 });
 
   try {
     const result = await checkHttp({
@@ -23,7 +23,7 @@ Deno.test("checkHttp returns up when status matches expected", async () => {
 
 Deno.test("checkHttp returns down when status mismatches", async () => {
   const origFetch = globalThis.fetch;
-  globalThis.fetch = async () => new Response("Not Found", { status: 404 });
+  globalThis.fetch = () => new Response("Not Found", { status: 404 });
 
   try {
     const result = await checkHttp({
@@ -43,7 +43,7 @@ Deno.test("checkHttp returns down when status mismatches", async () => {
 
 Deno.test("checkHttp returns error on network failure", async () => {
   const origFetch = globalThis.fetch;
-  globalThis.fetch = async () => {
+  globalThis.fetch = () => {
     throw new TypeError("fetch failed");
   };
 
@@ -66,9 +66,9 @@ Deno.test("checkHttp works with POST method", async () => {
   const origFetch = globalThis.fetch;
   let capturedUrl = "";
   let capturedMethod = "";
-  globalThis.fetch = async (url, opts: any) => {
+  globalThis.fetch = (url, opts?: RequestInit) => {
     capturedUrl = url as string;
-    capturedMethod = opts?.method || "GET";
+    capturedMethod = (opts?.method as string) || "GET";
     return new Response("Created", { status: 201 });
   };
 
