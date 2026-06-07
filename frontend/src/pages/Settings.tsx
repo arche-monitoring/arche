@@ -35,10 +35,16 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground">Configure notifications and general options.</p>
+    <div className="space-y-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+          <p className="text-sm text-muted-foreground">Configure notifications and general options.</p>
+        </div>
+        <Button onClick={handleSave} disabled={updateSettings.isPending}>
+          <Save className="h-4 w-4 mr-2" />
+          {updateSettings.isPending ? "Saving..." : "Save Settings"}
+        </Button>
       </div>
 
       {isLoading ? (
@@ -47,7 +53,7 @@ export default function Settings() {
           <Skeleton className="h-32 w-full" />
         </div>
       ) : (
-        <>
+        <div className="grid grid-cols-2 gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Telegram Notifications</CardTitle>
@@ -128,14 +134,7 @@ export default function Settings() {
               </div>
             </CardContent>
           </Card>
-
-          <div className="flex justify-end">
-            <Button onClick={handleSave} disabled={updateSettings.isPending}>
-              <Save className="h-4 w-4 mr-2" />
-              {updateSettings.isPending ? "Saving..." : "Save Settings"}
-            </Button>
-          </div>
-        </>
+        </div>
       )}
     </div>
   )
