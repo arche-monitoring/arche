@@ -33,10 +33,10 @@ Aperio runs on Linux (x64 & arm64) and macOS (x64 & Apple Silicon).
 
 ```bash
 docker pull ghcr.io/arche-monitoring/arche
-docker run -p 5173:5173 --restart=always ghcr.io/arche-monitoring/arche
+docker run -p 3000:3000 -v arche_data:/app/data --restart=always ghcr.io/arche-monitoring/arche
 ```
 
-Just open your browser at http://localhost:5173 and you are good to go.
+Just open your browser at http://localhost:3000 and you are good to go.
 
 ## Docs
 

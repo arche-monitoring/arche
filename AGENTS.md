@@ -51,7 +51,7 @@ deno task start
   `--allow-net --allow-read --allow-write --allow-env --allow-run --allow-sys`.
   The `deno task` commands include these; always include them when running
   manually.
-- **Env:** Copy `.env.example` to `.env`. Required vars: `PORT` (3001),
+- **Env:** Copy `.env.example` to `.env`. Required vars: `PORT` (3000),
   `DB_PATH` (./data/arche.db). Optional: `TELEGRAM_BOT_TOKEN`,
   `TELEGRAM_CHAT_ID`, `DISCORD_WEBHOOK_URL` (alerts silently skip if unset at
   first run; tokens are read from the DB settings table at runtime).
@@ -60,7 +60,7 @@ deno task start
   All API routes except `/api/auth/setup`, `/api/auth/login`, `/api/public/*`,
   and `/api/health` require authentication.
 - **Frontend proxy:** Vite dev server (port 5173) proxies `/api/*` to backend
-  (port 3001). In production, Docker runs only the backend; the Dockerfile
+  (port 3000). In production, Docker runs only the backend; the Dockerfile
   copies `frontend/dist/` but serving is not yet implemented.
 - **Path aliases:** Frontend uses `@/` → `./src/*` (configured in both
   `vite.config.ts` and `tsconfig.json`). Backend uses Deno-style bare imports
@@ -132,7 +132,7 @@ frontend/
 │   └── styles/          # globals.css
 ├── public/
 │   └── favicon.svg
-└── vite.config.ts       # Proxy /api → localhost:3001
+└── vite.config.ts       # Proxy /api → localhost:3000
 data/                    # SQLite DB at runtime (gitignored)
 docker/
 └── Dockerfile           # denoland/deno:alpine-2.1, copies backend/ + frontend/dist/

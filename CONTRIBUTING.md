@@ -5,7 +5,7 @@
 1. Clone the repo.
 2. Copy `.env.example` to `.env` and adjust if needed.
 3. Run `deno run -A scripts/dev.ts` — this starts both the backend and frontend
-   concurrently. The backend runs on `localhost:3001`, the frontend on
+   concurrently. The backend runs on `localhost:3000`, the frontend on
    `localhost:5173` (proxying `/api/*` to the backend).
 
 ## Development workflow
