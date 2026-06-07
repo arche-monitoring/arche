@@ -10,7 +10,9 @@ async function getWebhookUrl(): Promise<string> {
 
   try {
     const db = await getDb();
-    const row = await db.select().from(settings).where(eq(settings.key, "discord_webhook_url")).limit(1);
+    const row = await db.select().from(settings).where(
+      eq(settings.key, "discord_webhook_url"),
+    ).limit(1);
     if (row.length > 0 && row[0].value) return row[0].value;
   } catch {
     // ignore DB errors

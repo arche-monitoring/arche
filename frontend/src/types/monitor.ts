@@ -51,3 +51,24 @@ export interface UptimeData {
   uptime: number
   avg_response: number | null
 }
+
+export interface StatusPage {
+  id: number
+  title: string
+  slug: string
+  showAll: number
+  monitorIds: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface StatusPageFormData {
+  title: string
+  slug: string
+  show_all: boolean
+  monitor_ids: number[]
+}
+
+export interface StatusPageWithMonitors extends StatusPage {
+  monitors: Monitor[]
+}

@@ -48,7 +48,9 @@ export async function fetchFavicon(target: string): Promise<string | null> {
         if (iconUrl.startsWith("//")) {
           iconUrl = `https:${iconUrl}`;
         } else if (!iconUrl.startsWith("http")) {
-          iconUrl = `https://${domain}${iconUrl.startsWith("/") ? "" : "/"}${iconUrl}`;
+          iconUrl = `https://${domain}${
+            iconUrl.startsWith("/") ? "" : "/"
+          }${iconUrl}`;
         }
         const iconResult = await fetchAsBase64(iconUrl);
         if (iconResult) return iconResult;
@@ -72,7 +74,9 @@ export async function refreshMonitorFavicon(
   const { monitors } = await import("../database/schema.ts");
   const { eq } = await import("drizzle-orm");
   const db = await getDb();
-  const rows = await db.select().from(monitors).where(eq(monitors.id, monitorId));
+  const rows = await db.select().from(monitors).where(
+    eq(monitors.id, monitorId),
+  );
   if (rows.length === 0) return null;
   const monitor = rows[0] as { target: string };
   const favicon = await fetchFavicon(monitor.target);

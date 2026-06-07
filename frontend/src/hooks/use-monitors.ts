@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { api } from "@/lib/api-client"
-import type { MonitorFormData } from "@/types/monitor"
+import type { MonitorFormData, StatusPageFormData } from "@/types/monitor"
 
 export function useMonitors() {
   return useQuery({
@@ -69,6 +69,46 @@ export function useRefreshAllFavicons() {
   return useMutation({
     mutationFn: () => api.monitors.refreshAllFavicons(),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["monitors"] }),
+  })
+}
+
+export function useStatusPages() {
+  return useQuery({
+    queryKey: ["status-pages"],
+    queryFn: api.statusPages.list,
+  })
+}
+
+export function useCreateStatusPage() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: StatusPageFormData) => api.statusPages.create(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["status-pages"] }),
+  })
+}
+
+export function useUpdateStatusPage() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: StatusPageFormData }) =>
+      api.statusPages.update(id, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["status-pages"] }),
+  })
+}
+
+export function useDeleteStatusPage() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => api.statusPages.delete(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["status-pages"] }),
+  })
+}
+
+export function usePublicStatusPage(slug: string) {
+  return useQuery({
+    queryKey: ["public-status-page", slug],
+    queryFn: () => api.statusPages.getPublic(slug),
+    refetchInterval: 15_000,
   })
 }
 

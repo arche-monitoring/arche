@@ -110,7 +110,8 @@ async function cleanupOldChecks() {
     const retentionDays = rows.length > 0 ? parseInt(rows[0].value, 10) : 365;
     if (isNaN(retentionDays) || retentionDays < 1) return;
 
-    const cutoff = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000).toISOString();
+    const cutoff = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000)
+      .toISOString();
     await db.delete(checks)
       .where(lt(checks.checkedAt, cutoff));
     logger.info(`Cleaned up checks older than ${retentionDays} days`);
@@ -125,8 +126,14 @@ async function refreshStaleFavicons() {
     const allMonitors = await db.select().from(monitors);
     const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     for (const m of allMonitors) {
-      const row = m as { id: number; favicon: string | null; faviconUpdatedAt: string | null };
-      if (!row.favicon || !row.faviconUpdatedAt || row.faviconUpdatedAt < cutoff) {
+      const row = m as {
+        id: number;
+        favicon: string | null;
+        faviconUpdatedAt: string | null;
+      };
+      if (
+        !row.favicon || !row.faviconUpdatedAt || row.faviconUpdatedAt < cutoff
+      ) {
         await refreshMonitorFavicon(row.id);
       }
     }
@@ -157,7 +164,9 @@ export function startScheduler() {
 
           if (lastCheck.length > 0) {
             const raw = lastCheck[0].checkedAt!;
-const lastTime = new Date(raw.endsWith("Z") ? raw : raw.replace(" ", "T") + "Z").getTime();
+            const lastTime = new Date(
+              raw.endsWith("Z") ? raw : raw.replace(" ", "T") + "Z",
+            ).getTime();
             const elapsed = Date.now() - lastTime;
             if (elapsed < (monitor.interval ?? 60) * 1000) continue;
           }
@@ -171,9 +180,10 @@ const lastTime = new Date(raw.endsWith("Z") ? raw : raw.replace(" ", "T") + "Z")
 
           const prevStatus = previousStatuses[monitor.id];
           if (prevStatus && prevStatus === "up" && result.status !== "up") {
-            const msg = `🔴 **${monitor.name}** went down!\nType: ${monitor.type}\nTarget: ${monitor.target}\nError: ${
-              result.error || "Unreachable"
-            }`;
+            const msg =
+              `🔴 **${monitor.name}** went down!\nType: ${monitor.type}\nTarget: ${monitor.target}\nError: ${
+                result.error || "Unreachable"
+              }`;
             await sendTelegramAlert(
               `🔴 <b>${monitor.name}</b> went down!\nType: ${monitor.type}\nTarget: ${monitor.target}\nError: ${
                 result.error || "Unreachable"
@@ -182,7 +192,8 @@ const lastTime = new Date(raw.endsWith("Z") ? raw : raw.replace(" ", "T") + "Z")
             await sendDiscordAlert(msg);
           }
           if (prevStatus && prevStatus !== "up" && result.status === "up") {
-            const msg = `🟢 **${monitor.name}** is back up!\nType: ${monitor.type}\nTarget: ${monitor.target}`;
+            const msg =
+              `🟢 **${monitor.name}** is back up!\nType: ${monitor.type}\nTarget: ${monitor.target}`;
             await sendTelegramAlert(
               `🟢 <b>${monitor.name}</b> is back up!\nType: ${monitor.type}\nTarget: ${monitor.target}`,
             );

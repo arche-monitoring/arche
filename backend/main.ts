@@ -6,6 +6,8 @@ import { getDb } from "./database/client.ts";
 import { monitorsRouter } from "./routers/monitors.ts";
 import { checksRouter } from "./routers/checks.ts";
 import { settingsRouter } from "./routers/settings.ts";
+import { statusPagesRouter } from "./routers/status-pages.ts";
+import { publicRouter } from "./routers/public.ts";
 import { startScheduler, stopScheduler } from "./services/scheduler.ts";
 
 const app = new Hono();
@@ -21,6 +23,8 @@ app.use(
 app.route("/api/monitors", monitorsRouter);
 app.route("/api/checks", checksRouter);
 app.route("/api/settings", settingsRouter);
+app.route("/api/status-pages", statusPagesRouter);
+app.route("/api/public", publicRouter);
 
 app.get("/api/health", (c) => c.json({ status: "ok" }));
 

@@ -35,7 +35,11 @@ export function MonitorCard({ monitor }: MonitorCardProps) {
     .reverse()
     .map((c) => ({ v: c.responseTimeMs ?? 0 }))
 
-  const lineColor = monitor.last_status === "up" ? "hsl(160 84% 39%)" : "hsl(0 84% 60%)"
+  const hasSparkData = sparkData.length > 1
+  const displayData = hasSparkData ? sparkData : [{ v: 0 }, { v: 0 }]
+  const lineColor = hasSparkData
+    ? (monitor.last_status === "up" ? "hsl(160 84% 39%)" : "hsl(0 84% 60%)")
+    : "hsl(var(--muted-foreground))"
 
   return (
     <Card
@@ -60,7 +64,7 @@ export function MonitorCard({ monitor }: MonitorCardProps) {
         </div>
         <div className="mt-2 h-40">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={sparkData}>
+            <AreaChart data={displayData}>
               <defs>
                 <linearGradient id={`spark-fill-${monitor.id}`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={lineColor} stopOpacity={0.3} />

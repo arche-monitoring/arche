@@ -2,7 +2,10 @@ import { Hono } from "hono";
 import { desc, eq, inArray } from "drizzle-orm";
 import { getDb } from "../database/client.ts";
 import { checks, monitors } from "../database/schema.ts";
-import { refreshMonitorFavicon, refreshAllFavicons } from "../services/favicon.ts";
+import {
+  refreshAllFavicons,
+  refreshMonitorFavicon,
+} from "../services/favicon.ts";
 
 const router = new Hono();
 

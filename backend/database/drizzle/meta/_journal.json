@@ -15,6 +15,13 @@
       "when": 1780869667684,
       "tag": "0001_broad_cerebro",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1780950000000,
+      "tag": "0002_add_status_pages",
+      "breakpoints": true
     }
   ]
 }

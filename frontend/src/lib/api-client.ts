@@ -1,4 +1,4 @@
-import type { Monitor, MonitorFormData, Check, UptimeData } from "@/types/monitor"
+import type { Monitor, MonitorFormData, Check, UptimeData, StatusPage, StatusPageFormData, StatusPageWithMonitors } from "@/types/monitor"
 
 const BASE = "/api"
 
@@ -49,6 +49,24 @@ export const api = {
         method: "PUT",
         body: JSON.stringify(data),
       }),
+  },
+  statusPages: {
+    list: () => request<StatusPage[]>("/status-pages"),
+    get: (id: number) => request<StatusPage>(`/status-pages/${id}`),
+    create: (data: StatusPageFormData) =>
+      request<StatusPage>("/status-pages", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    update: (id: number, data: StatusPageFormData) =>
+      request<void>(`/status-pages/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+    delete: (id: number) =>
+      request<void>(`/status-pages/${id}`, { method: "DELETE" }),
+    getPublic: (slug: string) =>
+      request<StatusPageWithMonitors>(`/public/status-page/${slug}`),
   },
 }
 

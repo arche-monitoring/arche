@@ -50,6 +50,10 @@ export default function MonitorDetail() {
       status: c.status,
     }))
 
+  const hasChartData = chartData.length > 0
+  const displayChartData = hasChartData ? chartData : [{ time: "", response: 0 }, { time: "", response: 0 }]
+  const chartLineColor = hasChartData ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))"
+
   return (
     <div className="space-y-6">
       <Button variant="ghost" size="sm" onClick={() => navigate("/monitors")}>
@@ -138,7 +142,7 @@ export default function MonitorDetail() {
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData}>
+                  <LineChart data={displayChartData}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="time" fontSize={11} tickLine={false} className="text-muted-foreground" />
                     <YAxis fontSize={11} tickLine={false} className="text-muted-foreground" />
@@ -153,7 +157,7 @@ export default function MonitorDetail() {
                     <Line
                       type="monotone"
                       dataKey="response"
-                      stroke="hsl(var(--primary))"
+                      stroke={chartLineColor}
                       strokeWidth={2}
                       dot={false}
                       name="Response (ms)"

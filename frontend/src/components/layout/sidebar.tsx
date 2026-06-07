@@ -5,11 +5,13 @@ import {
   Gauge,
   Monitor,
   Settings,
+  Globe,
 } from "lucide-react"
 
 const navItems = [
   { to: "/", icon: Gauge, label: "Dashboard" },
   { to: "/monitors", icon: Monitor, label: "Monitors" },
+  { to: "/status-pages", icon: Globe, label: "Status Pages" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ]
 

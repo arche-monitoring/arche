@@ -11,7 +11,11 @@ export async function checkTcp(
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeout * 1000);
 
-    const conn = await Deno.connect({ hostname, port, signal: controller.signal });
+    const conn = await Deno.connect({
+      hostname,
+      port,
+      signal: controller.signal,
+    });
     clearTimeout(timer);
     conn.close();
 
