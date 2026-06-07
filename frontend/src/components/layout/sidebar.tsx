@@ -1,0 +1,45 @@
+import { NavLink } from "react-router-dom"
+import { cn } from "@/lib/utils"
+import {
+  Activity,
+  Gauge,
+  Monitor,
+  Settings,
+} from "lucide-react"
+
+const navItems = [
+  { to: "/", icon: Gauge, label: "Dashboard" },
+  { to: "/monitors", icon: Monitor, label: "Monitors" },
+  { to: "/settings", icon: Settings, label: "Settings" },
+]
+
+export function Sidebar() {
+  return (
+    <aside className="fixed left-0 top-0 z-40 h-screen w-56 border-r bg-card">
+      <div className="flex h-14 items-center gap-2 border-b px-4">
+        <Activity className="h-5 w-5 text-primary" />
+        <span className="font-semibold tracking-tight">Arche</span>
+      </div>
+      <nav className="flex flex-col gap-1 p-2">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.to === "/"}
+            className={({ isActive }) =>
+              cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              )
+            }
+          >
+            <item.icon className="h-4 w-4" />
+            {item.label}
+          </NavLink>
+        ))}
+      </nav>
+    </aside>
+  )
+}

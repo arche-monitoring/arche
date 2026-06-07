@@ -1,0 +1,26 @@
+{
+  "tasks": {
+    "dev": "deno run --allow-net --allow-read --allow-write --allow-env --allow-run --allow-sys --watch backend/main.ts",
+    "dev:frontend": "cd frontend && npm run dev",
+    "start": "deno run --allow-net --allow-read --allow-write --allow-env --allow-run --allow-sys backend/main.ts",
+    "lint": "deno lint",
+    "lint:fix": "deno lint --fix",
+    "fmt": "deno fmt --check",
+    "fmt:fix": "deno fmt",
+    "check": "deno check backend/main.ts",
+    "check:all": "deno check backend/main.ts && cd frontend && npx tsc --noEmit"
+  },
+  "imports": {
+    "hono": "npm:hono@4",
+    "sqlite": "https://deno.land/x/sqlite@v3.9.1/mod.ts",
+    "imapflow": "npm:imapflow@1",
+    "drizzle-orm": "npm:drizzle-orm@0.40.0",
+    "drizzle-orm/": "npm:/drizzle-orm@0.40.0/"
+  },
+  "lint": {
+    "exclude": ["frontend"]
+  },
+  "fmt": {
+    "exclude": ["frontend"]
+  }
+}
