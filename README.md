@@ -17,11 +17,9 @@ Arche is a modern, beautiful and lightweight self-hosted monitoring tool.
 
 Aperio runs on Linux (x64 & arm64) and macOS (x64 & Apple Silicon).
 
-### Docker
-
 ```bash
 docker pull ghcr.io/arche-monitoring/arche
-docker run -p 5173:5173 ghcr.io/arche-monitoring/arche
+docker run -p 5173:5173 --restart=always ghcr.io/arche-monitoring/arche
 ```
 
 Just open your browser at http://localhost:5173 and you are good to go.
