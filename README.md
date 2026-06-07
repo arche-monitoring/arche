@@ -6,8 +6,8 @@ Arche is a modern, beautiful and lightweight self-hosted monitoring tool.
 
 ## Features
 
-- **8 check types** — HTTP(S), Ping, TCP, Port scan, DNS resolution, IMAP
-  login, SMTP handshake
+- **8 check types** — HTTP(S), Ping, TCP, Port scan, DNS resolution, IMAP login,
+  SMTP handshake
 - **Configurable intervals** — per-monitor check interval and timeout
 - **Status pages** — public pages with a custom slug
 - **Alerts** — Telegram bot and Discord webhook notifications on status changes

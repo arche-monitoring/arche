@@ -8,4 +8,5 @@ Please report security vulnerabilities via direct message on X (Twitter):
 
 Please do **not** open a public GitHub issue for security vulnerabilities.
 
-We will acknowledge receipt within 48 hours and work toward a resolution as quickly as possible.
+We will acknowledge receipt within 48 hours and work toward a resolution as
+quickly as possible.

@@ -29,8 +29,7 @@ export async function sendTelegramAlert(message: string) {
   }
 
   try {
-    const url =
-      `https://api.telegram.org/bot${token}/sendMessage`;
+    const url = `https://api.telegram.org/bot${token}/sendMessage`;
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

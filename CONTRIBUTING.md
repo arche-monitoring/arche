@@ -37,6 +37,7 @@ Refer to [AGENTS.md](AGENTS.md) for the full command reference, API table, and
 conventions including auth, permissions, env vars, and project structure.
 
 Key points:
+
 - **No tests** exist — do not add test infrastructure.
 - **No CI/CD** — do not create `.github/` directories or workflow files.
 - Backend uses Deno-style bare imports; frontend uses `@/` path aliases.

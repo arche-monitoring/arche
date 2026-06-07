@@ -47,13 +47,21 @@ deno task start
 - **No tests exist** anywhere in the repo. Do not look for test files or test
   commands.
 - **No CI/CD** configured. No `.github/` directory.
-- **Permissions:** The backend always needs `--allow-net --allow-read --allow-write --allow-env --allow-run --allow-sys`. The `deno task` commands include these; always include them when running manually.
+- **Permissions:** The backend always needs
+  `--allow-net --allow-read --allow-write --allow-env --allow-run --allow-sys`.
+  The `deno task` commands include these; always include them when running
+  manually.
 - **Env:** Copy `.env.example` to `.env`. Required vars: `PORT` (3001),
-  `DB_PATH` (./data/arche.db). Optional: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `DISCORD_WEBHOOK_URL` (alerts silently skip if unset at first run; tokens are read from the DB settings table at runtime).
-- **Auth:** Token-based auth with PBKDF2 password hashing and Bearer tokens. The first user is created via the `/api/auth/setup` endpoint on initial launch. All API routes except `/api/auth/setup`, `/api/auth/login`, `/api/public/*`, and `/api/health` require authentication.
+  `DB_PATH` (./data/arche.db). Optional: `TELEGRAM_BOT_TOKEN`,
+  `TELEGRAM_CHAT_ID`, `DISCORD_WEBHOOK_URL` (alerts silently skip if unset at
+  first run; tokens are read from the DB settings table at runtime).
+- **Auth:** Token-based auth with PBKDF2 password hashing and Bearer tokens. The
+  first user is created via the `/api/auth/setup` endpoint on initial launch.
+  All API routes except `/api/auth/setup`, `/api/auth/login`, `/api/public/*`,
+  and `/api/health` require authentication.
 - **Frontend proxy:** Vite dev server (port 5173) proxies `/api/*` to backend
-  (port 3001). In production, Docker runs only the backend; the Dockerfile copies
-  `frontend/dist/` but serving is not yet implemented.
+  (port 3001). In production, Docker runs only the backend; the Dockerfile
+  copies `frontend/dist/` but serving is not yet implemented.
 - **Path aliases:** Frontend uses `@/` → `./src/*` (configured in both
   `vite.config.ts` and `tsconfig.json`). Backend uses Deno-style bare imports
   (no path aliases).

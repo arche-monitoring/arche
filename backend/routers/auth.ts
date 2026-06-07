@@ -4,12 +4,12 @@ import { settings } from "../database/schema.ts";
 import { eq } from "drizzle-orm";
 import {
   addToken,
-  removeToken,
   generateToken,
-  hashPassword,
-  verifyPassword,
   getUsernameFromToken,
+  hashPassword,
   rateLimit,
+  removeToken,
+  verifyPassword,
 } from "../middleware/auth.ts";
 
 const router = new Hono();
