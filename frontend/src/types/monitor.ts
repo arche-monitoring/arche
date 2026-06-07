@@ -1,4 +1,4 @@
-export type MonitorType = "ping" | "http" | "port" | "imap" | "smtp"
+export type MonitorType = "ping" | "http" | "port" | "imap" | "smtp" | "dns" | "tcp"
 
 export interface Monitor {
   id: number

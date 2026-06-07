@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { MonitorStatusBadge } from "./monitor-status-badge"
 import { useChecks } from "@/hooks/use-monitors"
 import type { Monitor } from "@/types/monitor"
-import { Globe, Terminal, Server, Mail, MessageSquare } from "lucide-react"
+import { Globe, Terminal, Server, Mail, MessageSquare, Search, Network } from "lucide-react"
 import {
   AreaChart, Area, ResponsiveContainer,
 } from "recharts"
@@ -14,6 +14,8 @@ const typeIcons: Record<string, React.ReactNode> = {
   port: <Server className="h-4 w-4" />,
   imap: <Mail className="h-4 w-4" />,
   smtp: <MessageSquare className="h-4 w-4" />,
+  dns: <Search className="h-4 w-4" />,
+  tcp: <Network className="h-4 w-4" />,
 }
 
 interface MonitorCardProps {

@@ -1,15 +1,33 @@
 import { loadConfig } from "../config.ts";
+import { getDb } from "../database/client.ts";
+import { settings } from "../database/schema.ts";
+import { eq } from "drizzle-orm";
 import { logger } from "../utils/logger.ts";
 
-export async function sendDiscordAlert(message: string) {
+async function getWebhookUrl(): Promise<string> {
   const config = loadConfig();
-  if (!config.discordWebhookUrl) {
+  if (config.discordWebhookUrl) return config.discordWebhookUrl;
+
+  try {
+    const db = await getDb();
+    const row = await db.select().from(settings).where(eq(settings.key, "discord_webhook_url")).limit(1);
+    if (row.length > 0 && row[0].value) return row[0].value;
+  } catch {
+    // ignore DB errors
+  }
+
+  return "";
+}
+
+export async function sendDiscordAlert(message: string) {
+  const webhookUrl = await getWebhookUrl();
+  if (!webhookUrl) {
     logger.debug("Discord not configured, skipping alert");
     return;
   }
 
   try {
-    const res = await fetch(config.discordWebhookUrl, {
+    const res = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

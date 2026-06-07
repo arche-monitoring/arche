@@ -13,11 +13,13 @@ export default function Settings() {
 
   const [telegramToken, setTelegramToken] = useState("")
   const [telegramChatId, setTelegramChatId] = useState("")
+  const [discordWebhookUrl, setDiscordWebhookUrl] = useState("")
 
   useEffect(() => {
     if (settings) {
       setTelegramToken(settings.telegram_bot_token || "")
       setTelegramChatId(settings.telegram_chat_id || "")
+      setDiscordWebhookUrl(settings.discord_webhook_url || "")
     }
   }, [settings])
 
@@ -25,6 +27,7 @@ export default function Settings() {
     updateSettings.mutate({
       telegram_bot_token: telegramToken,
       telegram_chat_id: telegramChatId,
+      discord_webhook_url: discordWebhookUrl,
     })
   }
 
@@ -71,6 +74,30 @@ export default function Settings() {
               <div className="text-xs text-muted-foreground">
                 You can also set these via <code className="text-primary">TELEGRAM_BOT_TOKEN</code> and{" "}
                 <code className="text-primary">TELEGRAM_CHAT_ID</code> environment variables.
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Discord Notifications</CardTitle>
+              <CardDescription>
+                Get alerted when a monitor goes down or comes back up.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="webhookUrl">Webhook URL</Label>
+                <Input
+                  id="webhookUrl"
+                  value={discordWebhookUrl}
+                  onChange={(e) => setDiscordWebhookUrl(e.target.value)}
+                  placeholder="https://discord.com/api/webhooks/..."
+                />
+              </div>
+              <div className="text-xs text-muted-foreground">
+                You can also set this via{" "}
+                <code className="text-primary">DISCORD_WEBHOOK_URL</code> environment variable.
               </div>
             </CardContent>
           </Card>

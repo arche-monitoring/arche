@@ -5,6 +5,8 @@ import { checkHttp } from "../monitors/http.ts";
 import { checkPort } from "../monitors/port.ts";
 import { checkImap } from "../monitors/imap.ts";
 import { checkSmtp } from "../monitors/smtp.ts";
+import { checkDns } from "../monitors/dns.ts";
+import { checkTcp } from "../monitors/tcp.ts";
 import { sendTelegramAlert } from "./telegram.ts";
 import { sendDiscordAlert } from "./discord.ts";
 import { logger } from "../utils/logger.ts";
@@ -76,6 +78,14 @@ async function runCheck(monitor: MonitorRow): Promise<CheckResult> {
       return await checkSmtp(
         monitor.target,
         monitor.port || 587,
+        monitor.timeout ?? 30,
+      );
+    case "dns":
+      return await checkDns(monitor.target, monitor.timeout ?? 30);
+    case "tcp":
+      return await checkTcp(
+        monitor.target,
+        monitor.port || 80,
         monitor.timeout ?? 30,
       );
     default:
