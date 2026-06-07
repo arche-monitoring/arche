@@ -38,8 +38,9 @@ conventions including auth, permissions, env vars, and project structure.
 
 Key points:
 
-- **Tests** live in `backend/` (Deno test runner, `*_test.ts`) and `frontend/src/`
-  (vitest + React Testing Library). Run them with `deno task test` and `npm test`.
+- **Tests** live in `backend/` (Deno test runner, `*_test.ts`) and
+  `frontend/src/` (vitest + React Testing Library). Run them with
+  `deno task test` and `npm test`.
 - **CI/CD** is configured in `.github/workflows/ci.yml`.
 - Backend uses Deno-style bare imports; frontend uses `@/` path aliases.
 - All API routes except `/api/auth/setup`, `/api/auth/login`, `/api/public/*`,

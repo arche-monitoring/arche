@@ -82,10 +82,14 @@ Just open your browser at http://localhost:3000 and you are good to go.
 ### Data flow
 
 1. **Scheduler** ticks every 10 seconds, checks for monitors due for a check.
-2. Each due monitor runs its check implementation (HTTP, Ping, etc.) and stores the result (status, latency, error) in the `checks` table.
-3. If the monitor's status changed since the last check, alerts are dispatched via Telegram and/or Discord (if configured).
-4. The frontend polls `/api/monitors` and `/api/checks/latest` to display live status, or fetches per-monitor check history for the detail view.
-5. Status pages are served publicly via `/api/public/status-page/:slug` — no auth required.
+2. Each due monitor runs its check implementation (HTTP, Ping, etc.) and stores
+   the result (status, latency, error) in the `checks` table.
+3. If the monitor's status changed since the last check, alerts are dispatched
+   via Telegram and/or Discord (if configured).
+4. The frontend polls `/api/monitors` and `/api/checks/latest` to display live
+   status, or fetches per-monitor check history for the detail view.
+5. Status pages are served publicly via `/api/public/status-page/:slug` — no
+   auth required.
 
 ## License
 

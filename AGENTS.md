@@ -48,9 +48,9 @@ deno task start
 - **DB auto-migrates on startup** — `drizzle-orm/sqlite-proxy/migrator` runs all
   pending migrations when the server starts. `db:generate` / `db:push` are only
   needed during schema development.
-- **Tests** exist in `backend/` (Deno test runner, `*_test.ts`) and `frontend/src/`
-  (vitest + React Testing Library, `*.test.ts`/`.test.tsx`). Run with
-  `deno task test` and `npm test` respectively.
+- **Tests** exist in `backend/` (Deno test runner, `*_test.ts`) and
+  `frontend/src/` (vitest + React Testing Library, `*.test.ts`/`.test.tsx`). Run
+  with `deno task test` and `npm test` respectively.
 - **CI/CD** configured in `.github/workflows/ci.yml` — runs lint, format, type
   checks, tests, and frontend build on push/PR to main.
 - **Permissions:** The backend always needs

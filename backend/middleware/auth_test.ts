@@ -1,13 +1,13 @@
 import { assertEquals, assertExists, assertMatch } from "@std/assert";
 import {
   addToken,
+  authMiddleware,
   generateToken,
   getUsernameFromToken,
   hashPassword,
   rateLimit,
   removeToken,
   verifyPassword,
-  authMiddleware,
 } from "./auth.ts";
 
 Deno.test("generateToken produces 64-character hex string", () => {
@@ -62,11 +62,15 @@ Deno.test("rateLimit returns 429 after max attempts", async () => {
 
   const mockC = (ip: string) => ({
     req: { header: () => ip, url: "http://localhost/api/test" },
-    json: (body: unknown, status?: number) => new Response(JSON.stringify(body), { status }),
+    json: (body: unknown, status?: number) =>
+      new Response(JSON.stringify(body), { status }),
   });
 
   for (let i = 0; i < 3; i++) {
-    const ctx = mockC("1.2.3.4") as { req: { header: () => string }; json: (body: unknown, status?: number) => Response };
+    const ctx = mockC("1.2.3.4") as {
+      req: { header: () => string };
+      json: (body: unknown, status?: number) => Response;
+    };
     await handler(ctx, () => undefined);
     // @ts-ignore: accessing status
     if (ctx.status === 429) break;
@@ -78,11 +82,14 @@ Deno.test("authMiddleware allows public paths", async () => {
   // deno-lint-ignore no-explicit-any
   const c: any = {
     req: { url: "http://localhost/api/health", header: () => null },
-    json: (body: unknown, status?: number) => new Response(JSON.stringify(body), { status }),
+    json: (body: unknown, status?: number) =>
+      new Response(JSON.stringify(body), { status }),
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => { nextCalled = true; });
+  await authMiddleware(c, () => {
+    nextCalled = true;
+  });
   assertEquals(nextCalled, true);
 });
 
@@ -93,11 +100,14 @@ Deno.test("authMiddleware rejects missing Authorization header", async () => {
       url: "http://localhost/api/monitors",
       header: () => null,
     },
-    json: (body: unknown, status?: number) => new Response(JSON.stringify(body), { status }),
+    json: (body: unknown, status?: number) =>
+      new Response(JSON.stringify(body), { status }),
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => { nextCalled = true; });
+  await authMiddleware(c, () => {
+    nextCalled = true;
+  });
   assertEquals(nextCalled, false);
 });
 
@@ -108,11 +118,14 @@ Deno.test("authMiddleware rejects invalid Bearer token", async () => {
       url: "http://localhost/api/monitors",
       header: () => "Bearer invalidtoken",
     },
-    json: (body: unknown, status?: number) => new Response(JSON.stringify(body), { status }),
+    json: (body: unknown, status?: number) =>
+      new Response(JSON.stringify(body), { status }),
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => { nextCalled = true; });
+  await authMiddleware(c, () => {
+    nextCalled = true;
+  });
   assertEquals(nextCalled, false);
 });
 
@@ -126,11 +139,14 @@ Deno.test("authMiddleware allows valid Bearer token", async () => {
       url: "http://localhost/api/monitors",
       header: () => `Bearer ${token}`,
     },
-    json: (body: unknown, status?: number) => new Response(JSON.stringify(body), { status }),
+    json: (body: unknown, status?: number) =>
+      new Response(JSON.stringify(body), { status }),
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => { nextCalled = true; });
+  await authMiddleware(c, () => {
+    nextCalled = true;
+  });
   assertEquals(nextCalled, true);
 });
 
@@ -141,11 +157,14 @@ Deno.test("authMiddleware allows public /api/auth/* paths", async () => {
       url: "http://localhost/api/auth/login",
       header: () => null,
     },
-    json: (body: unknown, status?: number) => new Response(JSON.stringify(body), { status }),
+    json: (body: unknown, status?: number) =>
+      new Response(JSON.stringify(body), { status }),
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => { nextCalled = true; });
+  await authMiddleware(c, () => {
+    nextCalled = true;
+  });
   assertEquals(nextCalled, true);
 });
 
@@ -156,10 +175,13 @@ Deno.test("authMiddleware allows public /api/public/* paths", async () => {
       url: "http://localhost/api/public/status-page/my-page",
       header: () => null,
     },
-    json: (body: unknown, status?: number) => new Response(JSON.stringify(body), { status }),
+    json: (body: unknown, status?: number) =>
+      new Response(JSON.stringify(body), { status }),
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => { nextCalled = true; });
+  await authMiddleware(c, () => {
+    nextCalled = true;
+  });
   assertEquals(nextCalled, true);
 });

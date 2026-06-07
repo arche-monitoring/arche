@@ -21,7 +21,10 @@ Deno.test("fetchFavicon falls through to null when all sources fail", async () =
   globalThis.fetch = (input: URL | RequestInfo, _init?: RequestInit) => {
     callCount++;
     const urlStr = typeof input === "string" ? input : input.toString();
-    if (urlStr.includes("favicon.ico") || urlStr.includes("google.com/s2/favicons")) {
+    if (
+      urlStr.includes("favicon.ico") ||
+      urlStr.includes("google.com/s2/favicons")
+    ) {
       return new Response("not found", { status: 404 });
     }
     return new Response("<html><head></head></html>", {

@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { LogLevel, logger } from "./logger.ts";
+import { logger, LogLevel } from "./logger.ts";
 
 Deno.test("LogLevel enum has expected values", () => {
   assertEquals(LogLevel.DEBUG, 0);
