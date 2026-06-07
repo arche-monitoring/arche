@@ -6,6 +6,7 @@ import { checkPort } from "../monitors/port.ts";
 import { checkImap } from "../monitors/imap.ts";
 import { checkSmtp } from "../monitors/smtp.ts";
 import { sendTelegramAlert } from "./telegram.ts";
+import { sendDiscordAlert } from "./discord.ts";
 import { logger } from "../utils/logger.ts";
 import { desc, eq } from "drizzle-orm";
 import type { CheckResult } from "../monitors/ping.ts";
@@ -120,16 +121,22 @@ const lastTime = new Date(raw.endsWith("Z") ? raw : raw.replace(" ", "T") + "Z")
 
           const prevStatus = previousStatuses[monitor.id];
           if (prevStatus && prevStatus === "up" && result.status !== "up") {
+            const msg = `🔴 **${monitor.name}** went down!\nType: ${monitor.type}\nTarget: ${monitor.target}\nError: ${
+              result.error || "Unreachable"
+            }`;
             await sendTelegramAlert(
               `🔴 <b>${monitor.name}</b> went down!\nType: ${monitor.type}\nTarget: ${monitor.target}\nError: ${
                 result.error || "Unreachable"
               }`,
             );
+            await sendDiscordAlert(msg);
           }
           if (prevStatus && prevStatus !== "up" && result.status === "up") {
+            const msg = `🟢 **${monitor.name}** is back up!\nType: ${monitor.type}\nTarget: ${monitor.target}`;
             await sendTelegramAlert(
               `🟢 <b>${monitor.name}</b> is back up!\nType: ${monitor.type}\nTarget: ${monitor.target}`,
             );
+            await sendDiscordAlert(msg);
           }
 
           previousStatuses[monitor.id] = result.status;

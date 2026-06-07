@@ -3,6 +3,7 @@ export interface Config {
   dbPath: string;
   telegramBotToken: string;
   telegramChatId: string;
+  discordWebhookUrl: string;
 }
 
 export function loadConfig(): Config {
@@ -11,5 +12,6 @@ export function loadConfig(): Config {
     dbPath: Deno.env.get("DB_PATH") || "./data/arche.db",
     telegramBotToken: Deno.env.get("TELEGRAM_BOT_TOKEN") || "",
     telegramChatId: Deno.env.get("TELEGRAM_CHAT_ID") || "",
+    discordWebhookUrl: Deno.env.get("DISCORD_WEBHOOK_URL") || "",
   };
 }
