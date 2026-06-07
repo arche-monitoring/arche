@@ -32,8 +32,8 @@ export default function MonitorDetail() {
     .slice()
     .reverse()
     .map((c) => ({
-      time: c.checked_at ? new Date(c.checked_at.replace(" ", "T")).toLocaleTimeString() : "",
-      response: c.response_time_ms,
+      time: c.checkedAt ? new Date(c.checkedAt.replace(" ", "T")).toLocaleTimeString() : "",
+      response: c.responseTimeMs,
       status: c.status,
     }))
 
@@ -73,7 +73,7 @@ export default function MonitorDetail() {
               <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Response Time</CardTitle></CardHeader>
               <CardContent>
                 <p className="text-xl font-bold">
-                  {checks?.[0]?.response_time_ms ? `${checks[0].response_time_ms}ms` : "—"}
+                  {checks?.[0]?.responseTimeMs ? `${checks[0].responseTimeMs}ms` : "—"}
                 </p>
               </CardContent>
             </Card>
@@ -150,15 +150,15 @@ export default function MonitorDetail() {
                         }`}
                       />
                       <span className="capitalize">{check.status}</span>
-                      {check.response_time_ms && (
-                        <span className="text-muted-foreground">{check.response_time_ms}ms</span>
+                      {check.responseTimeMs && (
+                        <span className="text-muted-foreground">{check.responseTimeMs}ms</span>
                       )}
-                      {check.status_code && (
-                        <span className="text-muted-foreground">HTTP {check.status_code}</span>
+                      {check.statusCode && (
+                        <span className="text-muted-foreground">HTTP {check.statusCode}</span>
                       )}
                     </div>
                     <span className="text-xs text-muted-foreground">
-                      {check.checked_at ? new Date(check.checked_at.replace(" ", "T")).toLocaleString() : "—"}
+                      {check.checkedAt ? new Date(check.checkedAt.replace(" ", "T")).toLocaleString() : "—"}
                     </span>
                   </div>
                 ))}

@@ -45,7 +45,7 @@ export function MonitorForm({ open, onOpenChange, onSubmit, editMonitor }: Monit
         username: editMonitor.username || "",
         password: editMonitor.password || "",
         method: editMonitor.method || "GET",
-        expected_status: editMonitor.expected_status?.toString() || "200",
+        expected_status: editMonitor.expectedStatus?.toString() || "200",
         interval: editMonitor.interval.toString(),
         timeout: editMonitor.timeout.toString(),
       }

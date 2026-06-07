@@ -9,12 +9,12 @@ export interface Monitor {
   username: string | null
   password: string | null
   method: string | null
-  expected_status: number | null
+  expectedStatus: number | null
   interval: number
   timeout: number
   active: number
-  created_at: string
-  updated_at: string
+  createdAt: string
+  updatedAt: string
   last_status: string | null
   last_response_time: number | null
   last_checked_at: string | null
@@ -35,12 +35,12 @@ export interface MonitorFormData {
 
 export interface Check {
   id: number
-  monitor_id: number
+  monitorId: number
   status: string
-  response_time_ms: number | null
-  status_code: number | null
-  error_msg: string | null
-  checked_at: string
+  responseTimeMs: number | null
+  statusCode: number | null
+  errorMsg: string | null
+  checkedAt: string
 }
 
 export interface UptimeData {
