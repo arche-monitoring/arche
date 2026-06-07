@@ -10,7 +10,7 @@ export async function setupTestDb(): Promise<{ path: string }> {
 
 export function teardownTestDb(path: string) {
   closeDb();
-  try { Deno.removeSync(path); } catch {}
-  try { Deno.removeSync(path + "-wal"); } catch {}
-  try { Deno.removeSync(path + "-shm"); } catch {}
+  try { Deno.removeSync(path); } catch { /* ignore */ }
+  try { Deno.removeSync(path + "-wal"); } catch { /* ignore */ }
+  try { Deno.removeSync(path + "-shm"); } catch { /* ignore */ }
 }
