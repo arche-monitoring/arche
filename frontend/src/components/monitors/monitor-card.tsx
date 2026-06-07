@@ -58,29 +58,27 @@ export function MonitorCard({ monitor }: MonitorCardProps) {
           </div>
           <MonitorStatusBadge status={monitor.last_status} />
         </div>
-        {sparkData.length > 1 && (
-          <div className="mt-2 h-40">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={sparkData}>
-                <defs>
-                  <linearGradient id={`spark-fill-${monitor.id}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={lineColor} stopOpacity={0.3} />
-                    <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <Area
-                  type="monotone"
-                  dataKey="v"
-                  stroke={lineColor}
-                  strokeWidth={1.5}
-                  fill={`url(#spark-fill-${monitor.id})`}
-                  dot={false}
-                  isAnimationActive={false}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        )}
+        <div className="mt-2 h-40">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={sparkData}>
+              <defs>
+                <linearGradient id={`spark-fill-${monitor.id}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={lineColor} stopOpacity={0.3} />
+                  <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <Area
+                type="monotone"
+                dataKey="v"
+                stroke={lineColor}
+                strokeWidth={1.5}
+                fill={`url(#spark-fill-${monitor.id})`}
+                dot={false}
+                isAnimationActive={false}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
         <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
           <span>{responseTime}</span>
           <span className="uppercase">{monitor.type}</span>

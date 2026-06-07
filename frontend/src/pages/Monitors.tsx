@@ -82,6 +82,7 @@ export default function Monitors() {
       )}
 
       <MonitorForm
+        key={editingMonitor?.id ?? 'new'}
         open={formOpen}
         onOpenChange={setFormOpen}
         onSubmit={handleSubmit}
