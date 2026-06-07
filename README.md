@@ -5,13 +5,13 @@
     <img src="https://img.shields.io/badge/arche-Modern%20and%20Beautiful-2ea44f?style=for-the-badge" alt="Arche">
   </a>
 
-  <img src="https://img.shields.io/github/actions/workflow/status/arche-monitoring/arche/ci.yml?branch=main&label=CI%20Status&style=for-the-badge&logo=github&logoColor=white&color=2ea44f" alt="CI Status">
+<img src="https://img.shields.io/github/actions/workflow/status/arche-monitoring/arche/ci.yml?branch=main&label=CI%20Status&style=for-the-badge&logo=github&logoColor=white&color=2ea44f" alt="CI Status">
 
-  <a href="https://deps.rs/repo/github/arche-monitoring/arche">
+<a href="https://deps.rs/repo/github/arche-monitoring/arche">
     <img src="https://img.shields.io/badge/dependencies-up%20to%20date-2ea44f?style=for-the-badge&logo=typescript&logoColor=white" alt="Dependency Status">
   </a>
 
-  <img src="https://img.shields.io/github/stars/arche-monitoring/arche?style=for-the-badge&logo=github&logoColor=white&color=dfb317" alt="stars">
+<img src="https://img.shields.io/github/stars/arche-monitoring/arche?style=for-the-badge&logo=github&logoColor=white&color=dfb317" alt="stars">
 </p>
 
 ## What is Arche?
