@@ -42,6 +42,7 @@ async function saveCheck(monitorId: number, result: CheckResult) {
     responseTimeMs: result.responseTimeMs ?? null,
     statusCode: result.statusCode ?? null,
     errorMsg: result.error ?? null,
+    checkedAt: new Date().toISOString(),
   });
 }
 
@@ -91,44 +92,55 @@ export function startScheduler() {
   logger.info(`Scheduler started (tick every ${tickMs}ms)`);
 
   const runDueMonitors = async () => {
-    const activeMonitors = await getActiveMonitors();
-    const db = await getDb();
+    try {
+      const activeMonitors = await getActiveMonitors();
+      const db = await getDb();
 
-    for (const monitor of activeMonitors) {
-      const lastCheck = await db.select({ checkedAt: checks.checkedAt })
-        .from(checks)
-        .where(eq(checks.monitorId, monitor.id))
-        .orderBy(desc(checks.checkedAt))
-        .limit(1);
+      for (const monitor of activeMonitors) {
+        try {
+          const lastCheck = await db.select({ checkedAt: checks.checkedAt })
+            .from(checks)
+            .where(eq(checks.monitorId, monitor.id))
+            .orderBy(desc(checks.checkedAt))
+            .limit(1);
 
-      if (lastCheck.length > 0) {
-        const lastTime = new Date(lastCheck[0].checkedAt!).getTime();
-        const elapsed = Date.now() - lastTime;
-        if (elapsed < (monitor.interval ?? 60) * 1000) continue;
+          if (lastCheck.length > 0) {
+            const raw = lastCheck[0].checkedAt!;
+const lastTime = new Date(raw.endsWith("Z") ? raw : raw.replace(" ", "T") + "Z").getTime();
+            const elapsed = Date.now() - lastTime;
+            if (elapsed < (monitor.interval ?? 60) * 1000) continue;
+          }
+
+          logger.info(
+            `Checking ${monitor.name} (${monitor.type}:${monitor.target})`,
+          );
+          const result = await runCheck(monitor);
+          await saveCheck(monitor.id, result);
+          logger.info(`Result for ${monitor.name}: ${result.status}`);
+
+          const prevStatus = previousStatuses[monitor.id];
+          if (prevStatus && prevStatus === "up" && result.status !== "up") {
+            await sendTelegramAlert(
+              `🔴 <b>${monitor.name}</b> went down!\nType: ${monitor.type}\nTarget: ${monitor.target}\nError: ${
+                result.error || "Unreachable"
+              }`,
+            );
+          }
+          if (prevStatus && prevStatus !== "up" && result.status === "up") {
+            await sendTelegramAlert(
+              `🟢 <b>${monitor.name}</b> is back up!\nType: ${monitor.type}\nTarget: ${monitor.target}`,
+            );
+          }
+
+          previousStatuses[monitor.id] = result.status;
+        } catch (monitorErr) {
+          logger.error(
+            `Error checking ${monitor.name}: ${monitorErr}`,
+          );
+        }
       }
-
-      logger.info(
-        `Checking ${monitor.name} (${monitor.type}:${monitor.target})`,
-      );
-      const result = await runCheck(monitor);
-      await saveCheck(monitor.id, result);
-      logger.info(`Result for ${monitor.name}: ${result.status}`);
-
-      const prevStatus = previousStatuses[monitor.id];
-      if (prevStatus && prevStatus === "up" && result.status !== "up") {
-        await sendTelegramAlert(
-          `🔴 <b>${monitor.name}</b> went down!\nType: ${monitor.type}\nTarget: ${monitor.target}\nError: ${
-            result.error || "Unreachable"
-          }`,
-        );
-      }
-      if (prevStatus && prevStatus !== "up" && result.status === "up") {
-        await sendTelegramAlert(
-          `🟢 <b>${monitor.name}</b> is back up!\nType: ${monitor.type}\nTarget: ${monitor.target}`,
-        );
-      }
-
-      previousStatuses[monitor.id] = result.status;
+    } catch (err) {
+      logger.error(`Scheduler tick failed: ${err}`);
     }
   };
 
