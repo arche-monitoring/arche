@@ -137,7 +137,7 @@ frontend/
 │   ├── types/           # monitor.ts
 │   └── styles/          # globals.css
 ├── public/
-│   └── favicon.svg
+│   └── logo.png
 └── vite.config.ts       # Proxy /api → localhost:3000
 data/                    # SQLite DB at runtime (gitignored)
 docker/

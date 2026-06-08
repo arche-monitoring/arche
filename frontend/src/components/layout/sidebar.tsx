@@ -2,7 +2,6 @@ import { NavLink } from "react-router-dom"
 import { useAuth } from "@/lib/auth"
 import { cn } from "@/lib/utils"
 import {
-  Activity,
   Gauge,
   Monitor,
   Settings,
@@ -23,7 +22,7 @@ export function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-56 flex-col border-r bg-card">
       <div className="flex h-14 items-center gap-2 border-b px-4">
-        <Activity className="h-5 w-5 text-primary" />
+        <img src="/logo.png" alt="Arche" className="h-7 w-7" />
         <span className="font-semibold tracking-tight">Arche</span>
       </div>
       <nav className="flex flex-1 flex-col gap-1 p-2">

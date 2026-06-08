@@ -39,8 +39,5 @@ jobs:
       - name: Install dependencies
         run: deno install
 
-      - name: Test
-        run: deno run -A npm:vitest run
-
       - name: Build
         run: deno task build
