@@ -102,10 +102,13 @@ export const api = {
 }
 
 function normalizeFormData(data: MonitorFormData) {
+  const target = data.type === "ping"
+    ? data.target.replace(/^https?:\/\//i, "")
+    : data.target
   return {
     name: data.name,
     type: data.type,
-    target: data.target,
+    target,
     port: data.port ? parseInt(data.port, 10) : null,
     username: data.username || null,
     password: data.password || null,
