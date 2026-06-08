@@ -24,11 +24,11 @@ Arche is a modern, beautiful and lightweight self-hosted monitoring tool. Runs s
 
 ## Features
 
-- **🛡️ Multiple Check Types** — HTTP(S), Ping, TCP, Port scan, DNS resolution, IMAP login, and SMTP handshake.
-- **⏱️ Configurable Intervals** — Fine-grained control with per-monitor check intervals and custom timeouts.
-- **🌐 Status Pages** — Create beautiful, public-facing status pages with custom slugs.
-- **🔔 Instant Alerts** — Get notified immediately via Telegram bots or Discord webhooks on status changes.
-- **📊 Uptime Stats** — Monitor reliability at a glance with 24h, 7d, and 30d uptime percentages.
+- **Multiple Check Types** — HTTP(S), Ping, TCP, Port scan, DNS resolution, IMAP login, and SMTP handshake.
+- **Configurable Intervals** — Fine-grained control with per-monitor check intervals and custom timeouts.
+- **Status Pages** — Create beautiful, public-facing status pages with custom slugs.
+- **Instant Alerts** — Get notified immediately via Telegram bots or Discord webhooks on status changes.
+- **Uptime Stats** — Monitor reliability at a glance with 24h, 7d, and 30d uptime percentages.
 
 ## Install
 
