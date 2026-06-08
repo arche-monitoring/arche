@@ -22,7 +22,7 @@ export function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-56 flex-col border-r bg-card">
       <div className="flex h-14 items-center gap-2 border-b px-4">
-        <img src="/logo.png" alt="Arche" className="h-7 w-7" />
+        <img src="/logo.png" alt="Arche" className="h-7 w-7 rounded-full" />
         <span className="font-semibold tracking-tight">Arche</span>
       </div>
       <nav className="flex flex-1 flex-col gap-1 p-2">
