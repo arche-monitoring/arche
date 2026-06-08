@@ -46,13 +46,16 @@ export default function MonitorDetail() {
     .reverse()
     .map((c) => ({
       time: c.checkedAt ? new Date(c.checkedAt.replace(" ", "T")).toLocaleTimeString() : "",
-      response: c.responseTimeMs,
+      response: c.responseTimeMs ?? 0,
       status: c.status,
     }))
 
   const hasChartData = chartData.length > 0
   const displayChartData = hasChartData ? chartData : [{ time: "", response: 0 }, { time: "", response: 0 }]
-  const chartLineColor = hasChartData ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))"
+  const lastStatus = checks?.[0]?.status
+  const chartLineColor = hasChartData
+    ? (lastStatus === "up" ? "hsl(160 84% 39%)" : "hsl(0 84% 60%)")
+    : "hsl(var(--muted-foreground))"
 
   return (
     <div className="space-y-6">
