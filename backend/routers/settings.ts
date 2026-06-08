@@ -1,12 +1,11 @@
 import { Hono } from "hono";
-import { getDb } from "../database/client.ts";
+import { db } from "../database/client.ts";
 import { settings } from "../database/schema.ts";
 
 const router = new Hono();
 const AUTH_KEYS = new Set(["auth_username", "auth_password_hash"]);
 
 router.get("/", async (c) => {
-  const db = await getDb();
   const rows = await db.select().from(settings);
   const result: Record<string, string> = {};
   for (const row of rows) {
@@ -18,7 +17,6 @@ router.get("/", async (c) => {
 
 router.put("/", async (c) => {
   const body = await c.req.json() as Record<string, string>;
-  const db = await getDb();
   for (const [key, value] of Object.entries(body)) {
     if (AUTH_KEYS.has(key)) continue;
     await db.insert(settings)

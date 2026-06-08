@@ -1,14 +1,7 @@
 import { assertEquals, assertExists } from "@std/assert";
 import { Hono } from "hono";
 import { statusPagesRouter } from "./status-pages.ts";
-import { setupTestDb, teardownTestDb } from "../database/test_utils.ts";
-
-let dbPath = "";
-
-Deno.test("status pages router setup", async () => {
-  const setup = await setupTestDb();
-  dbPath = setup.path;
-});
+Deno.test("status pages router setup", () => {});
 
 Deno.test("GET / returns empty list initially", async () => {
   const app = new Hono();
@@ -111,5 +104,5 @@ Deno.test("DELETE /:id removes a status page", async () => {
 });
 
 Deno.test("teardown", () => {
-  teardownTestDb(dbPath);
+  {/* noop */}
 });

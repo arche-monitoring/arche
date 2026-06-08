@@ -10,9 +10,8 @@ function formatDnsRecords(records: unknown): string {
     if (Array.isArray(records[0])) {
       return (records as string[][]).map((r) => r.join(" ")).join(", ");
     }
-    return (records as Record<string, unknown>[]).map((r) =>
-      JSON.stringify(r)
-    ).join(", ");
+    return (records as Record<string, unknown>[]).map((r) => JSON.stringify(r))
+      .join(", ");
   }
   if (records && typeof records === "object") {
     return JSON.stringify(records);
