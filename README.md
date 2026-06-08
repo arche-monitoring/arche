@@ -20,7 +20,7 @@
 
 ## What is Arche?
 
-Arche is a modern, beautiful and lightweight self-hosted monitoring tool.
+Arche is a modern, beautiful and lightweight self-hosted monitoring tool. Runs seamlessly under 100MB of RAM on Linux (x64 & arm64) and macOS (x64 & Apple Silicon).
 
 ## Features
 
@@ -32,7 +32,7 @@ Arche is a modern, beautiful and lightweight self-hosted monitoring tool.
 
 ## Install
 
-Arche runs seamlessly on Linux (x64 & arm64) and macOS (x64 & Apple Silicon). Get started using Docker:
+Get started using Docker:
 
 ```bash
 docker pull ghcr.io/arche-monitoring/arche
