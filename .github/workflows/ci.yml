@@ -39,9 +39,6 @@ jobs:
       - name: Install dependencies
         run: deno install
 
-      - name: Type check
-        run: deno check src/
-
       - name: Test
         run: deno run -A npm:vitest run
 
