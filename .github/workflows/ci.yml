@@ -20,17 +20,8 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Lint
-        run: deno task lint
-
-      - name: Format check
-        run: deno task fmt
-
-      - name: Type check
-        run: deno task check
-
-      - name: Test
-        run: deno task test
+      - name: CI (lint, fmt, check, test)
+        run: deno ci
 
   frontend:
     runs-on: ubuntu-latest
