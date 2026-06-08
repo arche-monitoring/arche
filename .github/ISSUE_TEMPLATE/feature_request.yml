@@ -1,0 +1,37 @@
+name: Feature Request
+description: Suggest an idea for Arche
+labels: [enhancement]
+
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Is your feature request related to a problem? Please describe.
+      placeholder: I'm always frustrated when...
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any alternative solutions or features you've considered.
+
+  - type: checkboxes
+    id: type
+    attributes:
+      label: Type
+      options:
+        - label: Monitor type (new protocol / check method)
+        - label: Alert channel
+        - label: Status page
+        - label: Dashboard / UI
+        - label: API
+        - label: Other
