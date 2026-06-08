@@ -9,13 +9,8 @@ export function setJwtSecret(secret: string): void {
 
 function getJwtKey(): Uint8Array {
   if (jwtSecret) return jwtSecret;
-  const envSecret = Deno.env.get("JWT_SECRET");
-  if (envSecret) {
-    jwtSecret = new TextEncoder().encode(envSecret);
-    return jwtSecret;
-  }
   throw new Error(
-    "JWT secret not configured. Set JWT_SECRET env var or call setJwtSecret().",
+    "JWT secret not configured. Call setJwtSecret() before using auth.",
   );
 }
 
