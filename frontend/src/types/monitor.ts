@@ -10,6 +10,7 @@ export interface Monitor {
   password: string | null
   method: string | null
   expectedStatus: number | null
+  dnsRecordType: string | null
   interval: number
   timeout: number
   active: number
@@ -31,6 +32,7 @@ export interface MonitorFormData {
   password: string
   method: string
   expected_status: string
+  dns_record_type: string
   interval: string
   timeout: string
 }

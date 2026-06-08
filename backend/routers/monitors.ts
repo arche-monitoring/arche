@@ -74,6 +74,7 @@ router.post("/", async (c) => {
     password: body.password || null,
     method: body.method || "GET",
     expectedStatus: body.expected_status || 200,
+    dnsRecordType: body.dns_record_type || "A",
     interval: body.interval || 60,
     timeout: body.timeout || 30,
   }).returning();
@@ -96,6 +97,7 @@ router.put("/:id", async (c) => {
       password: body.password || null,
       method: body.method || "GET",
       expectedStatus: body.expected_status || 200,
+      dnsRecordType: body.dns_record_type || "A",
       interval: body.interval || 60,
       timeout: body.timeout || 30,
       active: body.active ?? 1,

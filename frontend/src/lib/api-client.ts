@@ -121,6 +121,7 @@ function normalizeFormData(data: MonitorFormData) {
     password: data.password || null,
     method: data.method || "GET",
     expected_status: data.expected_status ? parseInt(data.expected_status, 10) : 200,
+    dns_record_type: data.dns_record_type || "A",
     interval: parseInt(data.interval, 10) || 60,
     timeout: parseInt(data.timeout, 10) || 30,
   }

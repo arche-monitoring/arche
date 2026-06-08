@@ -24,6 +24,7 @@ const defaultForm: MonitorFormData = {
   password: "",
   method: "GET",
   expected_status: "200",
+  dns_record_type: "A",
   interval: "60",
   timeout: "30",
 }
@@ -47,6 +48,7 @@ export function MonitorForm({ open, onOpenChange, onSubmit, editMonitor }: Monit
         password: editMonitor.password || "",
         method: editMonitor.method || "GET",
         expected_status: editMonitor.expectedStatus?.toString() || "200",
+        dns_record_type: editMonitor.dnsRecordType || "A",
         interval: editMonitor.interval.toString(),
         timeout: editMonitor.timeout.toString(),
       }
@@ -66,6 +68,7 @@ export function MonitorForm({ open, onOpenChange, onSubmit, editMonitor }: Monit
         password: editMonitor.password || "",
         method: editMonitor.method || "GET",
         expected_status: editMonitor.expectedStatus?.toString() || "200",
+        dns_record_type: editMonitor.dnsRecordType || "A",
         interval: editMonitor.interval.toString(),
         timeout: editMonitor.timeout.toString(),
       })
@@ -84,8 +87,22 @@ export function MonitorForm({ open, onOpenChange, onSubmit, editMonitor }: Monit
   }
 
   const isHttp = form.type === "http"
+  const isDns = form.type === "dns"
   const needsPort = form.type === "imap" || form.type === "smtp" || form.type === "tcp"
   const needsAuth = form.type === "imap"
+
+  const dnsRecordTypes: { value: string; label: string }[] = [
+    { value: "A", label: "A" },
+    { value: "AAAA", label: "AAAA" },
+    { value: "CNAME", label: "CNAME" },
+    { value: "MX", label: "MX" },
+    { value: "NS", label: "NS" },
+    { value: "SOA", label: "SOA" },
+    { value: "TXT", label: "TXT" },
+    { value: "SRV", label: "SRV" },
+    { value: "CAA", label: "CAA" },
+    { value: "PTR", label: "PTR" },
+  ]
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -178,6 +195,18 @@ export function MonitorForm({ open, onOpenChange, onSubmit, editMonitor }: Monit
                 />
               </div>
             </>
+          )}
+
+          {isDns && (
+            <div className="grid gap-2">
+              <Label htmlFor="dns_record_type">Record Type</Label>
+              <Select
+                id="dns_record_type"
+                options={dnsRecordTypes}
+                value={form.dns_record_type}
+                onChange={(e) => update("dns_record_type", e.target.value)}
+              />
+            </div>
           )}
 
           {isHttp && (

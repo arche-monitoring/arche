@@ -26,6 +26,7 @@ interface MonitorRow {
   interval: number | null;
   timeout: number | null;
   active: number | null;
+  dnsRecordType: string | null;
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -76,7 +77,11 @@ async function runCheck(monitor: MonitorRow): Promise<CheckResult> {
         monitor.timeout ?? 30,
       );
     case "dns":
-      return await checkDns(monitor.target, monitor.timeout ?? 30);
+      return await checkDns(
+        monitor.target,
+        monitor.dnsRecordType || "A",
+        monitor.timeout ?? 30,
+      );
     case "tcp":
       return await checkTcp(
         monitor.target,
