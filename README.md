@@ -36,7 +36,7 @@ Arche runs seamlessly on Linux (x64 & arm64) and macOS (x64 & Apple Silicon). Ge
 
 ```bash
 docker pull ghcr.io/arche-monitoring/arche
-docker run -p 3000:3000 -v arche_data:/app/data --restart=always ghcr.io/arche-monitoring/arche
+docker run -p 3000:3000 -v arche_data:/app/data --name arche --restart=always ghcr.io/arche-monitoring/arche
 ```
 
 Ready to go! Open http://localhost:3000 in your browser to get started.
