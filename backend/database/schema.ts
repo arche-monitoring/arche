@@ -14,6 +14,7 @@ export const monitors = sqliteTable("monitors", {
   interval: integer("interval").default(60),
   timeout: integer("timeout").default(30),
   active: integer("active").default(1),
+  dnsRecordType: text("dns_record_type").default("A"),
   favicon: text("favicon"),
   faviconUpdatedAt: text("favicon_updated_at"),
   createdAt: text("created_at").default(sql`(datetime('now'))`),

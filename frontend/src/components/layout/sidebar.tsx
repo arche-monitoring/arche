@@ -17,7 +17,7 @@ const navItems = [
 ]
 
 export function Sidebar() {
-  const { logout, user } = useAuth()
+  const { logout } = useAuth()
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-56 flex-col border-r bg-card">
@@ -46,9 +46,6 @@ export function Sidebar() {
         ))}
       </nav>
       <div className="border-t p-2">
-        <div className="px-3 py-2 text-xs text-muted-foreground truncate">
-          {user}
-        </div>
         <button
           onClick={logout}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
