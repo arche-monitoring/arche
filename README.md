@@ -22,80 +22,30 @@
 
 Arche is a modern, beautiful and lightweight self-hosted monitoring tool.
 
-If you find Aperio useful, please consider becoming a sponsor: as an independent open-source project, we rely on community backing to keep Arche modern, lightweight, and actively maintained. Take a look at our GitHub Sponsors page to see how you can help.
-
 ## Features
 
-- **8 check types** — HTTP(S), Ping, TCP, Port scan, DNS resolution, IMAP login,
-  SMTP handshake
-- **Configurable intervals** — per-monitor check interval and timeout
-- **Status pages** — public pages with a custom slug
-- **Alerts** — Telegram bot and Discord webhook notifications on status changes
-- **Uptime Stats** — 24h, 7d, and 30d uptime percentages per monitor
+- **🛡️ Multiple Check Types** — HTTP(S), Ping, TCP, Port scan, DNS resolution, IMAP login, and SMTP handshake.
+- **⏱️ Configurable Intervals** — Fine-grained control with per-monitor check intervals and custom timeouts.
+- **🌐 Status Pages** — Create beautiful, public-facing status pages with custom slugs.
+- **🔔 Instant Alerts** — Get notified immediately via Telegram bots or Discord webhooks on status changes.
+- **📊 Uptime Stats** — Monitor reliability at a glance with 24h, 7d, and 30d uptime percentages.
 
 ## Install
 
-Aperio runs on Linux (x64 & arm64) and macOS (x64 & Apple Silicon).
+Arche runs seamlessly on Linux (x64 & arm64) and macOS (x64 & Apple Silicon). Get started using Docker:
 
 ```bash
 docker pull ghcr.io/arche-monitoring/arche
 docker run -p 3000:3000 -v arche_data:/app/data --restart=always ghcr.io/arche-monitoring/arche
 ```
 
-Just open your browser at http://localhost:3000 and you are good to go.
+Ready to go! Open http://localhost:3000 in your browser to get started.
 
-## Architecture
+## Sponsor
 
-```
-┌─────────────────────────────────────────────────────┐
-│                   Browser (React SPA)               │
-│  ┌───────────────────────────────────────────────┐  │
-│  │  React 18 · React Router · TanStack Query     │  │
-│  │  Tailwind CSS · shadcn/ui · Recharts          │  │
-│  └──────────────┬────────────────────────────────┘  │
-│                 │ /api/* (Vite proxy → :3000)       │
-└─────────────────┼───────────────────────────────────┘
-                  │
-┌─────────────────┼────────────────────────────────────┐
-│  Deno 2 · Hono  │  (backend — port 3000)             │
-│                 ▼                                    │
-│  ┌──────────────────────────────┐                    │
-│  │  Auth Middleware             │                    │
-│  │  (PBKDF2 + Bearer tokens)   │                     │
-│  └──────┬───────────────────────┘                    │
-│         │                                            │
-│  ┌──────▼───────────────────────┐                    │
-│  │  Routers                     │                    │
-│  │  auth · monitors · checks    │                    │
-│  │  settings · status-pages     │                    │
-│  │  public                      │                    │
-│  └──────┬───────────────────────┘                    │
-│         │                                            │
-│  ┌──────▼───────────────────────┐  ┌──────────────┐  │
-│  │  Check Implementations       │  │  Scheduler   │  │
-│  │  HTTP · Ping · TCP · Port    │◄─┤  (10s tick)  │  │
-│  │  DNS · IMAP · SMTP           │  └──────────────┘  │
-│  └──────┬───────────────────────┘                    │
-│         │                                            │
-│  ┌──────▼───────────────────────┐  ┌──────────────┐  │
-│  │  Drizzle ORM + SQLite        │  │  Alert       │  │
-│  │  (auto-migrate on startup)   │  │  Telegram    │  │
-│  └──────────────────────────────┘  │  Discord     │  │
-│                                    └──────────────┘  │
-└──────────────────────────────────────────────────────┘
-```
+If you find Arche useful, please consider becoming a sponsor: as an independent open-source project, we rely on community backing to keep Arche beautiful, lightweight and actively maintained. Take a look at our [GitHub Sponsors](https://github.com/sponsors/andresribeiro) page to see how you can help.
 
-### Data flow
-
-1. **Scheduler** ticks every 10 seconds, checks for monitors due for a check.
-2. Each due monitor runs its check implementation (HTTP, Ping, etc.) and stores
-   the result (status, latency, error) in the `checks` table.
-3. If the monitor's status changed since the last check, alerts are dispatched
-   via Telegram and/or Discord (if configured).
-4. The frontend polls `/api/monitors` and `/api/checks/latest` to display live
-   status, or fetches per-monitor check history for the detail view.
-5. Status pages are served publicly via `/api/public/status-page/:slug` — no
-   auth required.
+If you have a few seconds, a star on GitHub helps us a lot!
 
 ## License
 
