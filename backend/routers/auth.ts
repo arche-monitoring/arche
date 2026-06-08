@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { getDb } from "../database/client.ts";
+import { db } from "../database/client.ts";
 import { settings } from "../database/schema.ts";
 import { eq } from "drizzle-orm";
 import {
@@ -12,9 +12,7 @@ import {
 
 const router = new Hono();
 
-async function getAuthSettings(
-  db: Awaited<ReturnType<typeof getDb>>,
-) {
+async function getAuthSettings() {
   const rows = await db.select().from(settings).where(
     eq(settings.key, "auth_username"),
   );
@@ -39,8 +37,8 @@ router.post("/login", rateLimit(5, 60_000), async (c) => {
     return c.json({ error: "Username and password required" }, 400);
   }
 
-  const db = await getDb();
-  const auth = await getAuthSettings(db);
+  const auth = await getAuthSettings();
+
   if (!auth.isConfigured) {
     return c.json(
       { error: "Authentication not configured. Please run setup first." },
@@ -74,8 +72,8 @@ router.get("/me", async (c) => {
     }
   }
 
-  const db = await getDb();
-  const auth = await getAuthSettings(db);
+  const auth = await getAuthSettings();
+
   if (!auth.isConfigured) {
     return c.json({ authenticated: false, setupRequired: true });
   }
@@ -84,8 +82,8 @@ router.get("/me", async (c) => {
 });
 
 router.post("/setup", rateLimit(3, 60_000), async (c) => {
-  const db = await getDb();
-  const auth = await getAuthSettings(db);
+  const auth = await getAuthSettings();
+
   if (auth.isConfigured) {
     return c.json({ error: "Authentication already configured" }, 400);
   }
@@ -143,8 +141,7 @@ router.post("/change-credentials", rateLimit(5, 60_000), async (c) => {
     );
   }
 
-  const db = await getDb();
-  const auth = await getAuthSettings(db);
+  const auth = await getAuthSettings();
 
   const valid = await verifyPassword(currentPassword, auth.passwordHash);
   if (!valid) {

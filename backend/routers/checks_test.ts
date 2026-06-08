@@ -2,17 +2,11 @@ import { assertEquals, assertExists } from "@std/assert";
 import { Hono } from "hono";
 import { monitorsRouter } from "./monitors.ts";
 import { checksRouter } from "./checks.ts";
-import { getDb } from "../database/client.ts";
+import { db } from "../database/client.ts";
 import { checks } from "../database/schema.ts";
-import { setupTestDb, teardownTestDb } from "../database/test_utils.ts";
-
-let dbPath = "";
 let monitorId = 0;
 
-Deno.test("checks router setup", async () => {
-  const setup = await setupTestDb();
-  dbPath = setup.path;
-});
+Deno.test("checks router setup", () => {});
 
 Deno.test("create a monitor and insert checks", async () => {
   const app = new Hono();
@@ -30,7 +24,6 @@ Deno.test("create a monitor and insert checks", async () => {
   const body = await res.json();
   monitorId = body.id;
 
-  const db = await getDb();
   await db.insert(checks).values({
     monitorId,
     status: "up",
@@ -108,5 +101,5 @@ Deno.test("GET /uptime/:id returns uptime stats", async () => {
 });
 
 Deno.test("teardown", () => {
-  teardownTestDb(dbPath);
+  {/* noop */}
 });

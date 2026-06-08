@@ -3,7 +3,7 @@ import { cors } from "hono/cors";
 import { serveStatic } from "hono/serve-static";
 import { logger } from "./utils/logger.ts";
 import { loadConfig } from "./config.ts";
-import { getDb } from "./database/client.ts";
+import { db } from "./database/client.ts";
 import { monitorsRouter } from "./routers/monitors.ts";
 import { checksRouter } from "./routers/checks.ts";
 import { settingsRouter } from "./routers/settings.ts";
@@ -71,7 +71,6 @@ if (isDev) {
 }
 
 const config = loadConfig();
-const db = await getDb();
 
 const rows = await db
   .select()

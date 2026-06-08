@@ -70,10 +70,9 @@ export async function fetchFavicon(target: string): Promise<string | null> {
 export async function refreshMonitorFavicon(
   monitorId: number,
 ): Promise<string | null> {
-  const { getDb } = await import("../database/client.ts");
+  const { db } = await import("../database/client.ts");
   const { monitors } = await import("../database/schema.ts");
   const { eq } = await import("drizzle-orm");
-  const db = await getDb();
   const rows = await db.select().from(monitors).where(
     eq(monitors.id, monitorId),
   );
@@ -96,9 +95,8 @@ export async function refreshMonitorFavicon(
 }
 
 export async function refreshAllFavicons(): Promise<void> {
-  const { getDb } = await import("../database/client.ts");
+  const { db } = await import("../database/client.ts");
   const { monitors } = await import("../database/schema.ts");
-  const db = await getDb();
   const allMonitors = await db.select().from(monitors);
   for (const m of allMonitors) {
     const monitor = m as { id: number };

@@ -1,14 +1,7 @@
 import { assertEquals } from "@std/assert";
 import { Hono } from "hono";
 import { settingsRouter } from "./settings.ts";
-import { setupTestDb, teardownTestDb } from "../database/test_utils.ts";
-
-let dbPath = "";
-
-Deno.test("settings router setup", async () => {
-  const setup = await setupTestDb();
-  dbPath = setup.path;
-});
+Deno.test("settings router setup", () => {});
 
 Deno.test("GET / returns settings object", async () => {
   const app = new Hono();
@@ -61,5 +54,5 @@ Deno.test("PUT / merges with existing settings", async () => {
 });
 
 Deno.test("teardown", () => {
-  teardownTestDb(dbPath);
+  {/* noop */}
 });

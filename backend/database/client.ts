@@ -1,51 +1,10 @@
-import { DB } from "sqlite";
-import { drizzle } from "drizzle-orm/sqlite-proxy";
-import { migrate } from "drizzle-orm/sqlite-proxy/migrator";
-import { loadConfig } from "../config.ts";
-import { logger } from "../utils/logger.ts";
+import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 
-type Params = (string | number | boolean | null)[] | undefined;
+const sqlite = new Database("sqlite.db");
+const db = drizzle({ client: sqlite });
 
-let dbInstance: ReturnType<typeof drizzle> | null = null;
-let rawDb: DB | null = null;
+migrate(db, { migrationsFolder: "./backend/database/drizzle" });
 
-export async function getDb() {
-  if (!dbInstance) {
-    const config = loadConfig();
-    const dir = config.dbPath.substring(0, config.dbPath.lastIndexOf("/"));
-    if (dir) Deno.mkdirSync(dir, { recursive: true });
-
-    rawDb = new DB(config.dbPath);
-    rawDb.execute("PRAGMA journal_mode=WAL");
-    rawDb.execute("PRAGMA foreign_keys=ON");
-
-    // deno-lint-ignore require-await
-    dbInstance = drizzle(async (sql, params, _method) => {
-      try {
-        const rows = rawDb!.query(sql, params as Params);
-        return { rows: rows as unknown as Record<string, unknown>[] };
-      } catch (e) {
-        logger.error("SQL error:", e);
-        throw e;
-      }
-    });
-
-    // deno-lint-ignore require-await
-    await migrate(dbInstance, async (queries) => {
-      for (const query of queries) {
-        rawDb!.execute(query);
-      }
-    }, { migrationsFolder: "./backend/database/drizzle" });
-
-    logger.info(`Database initialized at ${config.dbPath}`);
-  }
-  return dbInstance;
-}
-
-export function closeDb() {
-  if (rawDb) {
-    rawDb.close();
-    rawDb = null;
-    dbInstance = null;
-  }
-}
+export { db };

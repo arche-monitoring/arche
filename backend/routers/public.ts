@@ -1,13 +1,12 @@
 import { Hono } from "hono";
 import { desc, eq, inArray } from "drizzle-orm";
-import { getDb } from "../database/client.ts";
+import { db } from "../database/client.ts";
 import { checks, monitors, statusPages } from "../database/schema.ts";
 
 const router = new Hono();
 
 router.get("/status-page/:slug", async (c) => {
   const slug = c.req.param("slug");
-  const db = await getDb();
 
   const pages = await db.select().from(statusPages).where(
     eq(statusPages.slug, slug),

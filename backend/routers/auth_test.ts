@@ -2,19 +2,13 @@ import { assertEquals, assertExists } from "@std/assert";
 import { Hono } from "hono";
 import { authRouter } from "./auth.ts";
 import { setJwtSecret } from "../middleware/auth.ts";
-import { setupTestDb, teardownTestDb } from "../database/test_utils.ts";
 
 const TEST_SECRET = "test-secret-for-jwt-in-router-tests-abcdef";
 setJwtSecret(TEST_SECRET);
 
-let dbPath = "";
-
 const ip = (n: number) => ({ "x-forwarded-for": `127.0.0.${n}` });
 
-Deno.test("auth router setup", async () => {
-  const setup = await setupTestDb();
-  dbPath = setup.path;
-});
+Deno.test("auth router setup", () => {});
 
 Deno.test("POST /setup creates first user", async () => {
   const app = new Hono();
@@ -227,5 +221,5 @@ Deno.test("POST /change-credentials rejects wrong current password", async () =>
 });
 
 Deno.test("teardown", () => {
-  teardownTestDb(dbPath);
+  {/* noop */}
 });

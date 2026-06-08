@@ -1,4 +1,4 @@
-import { getDb } from "../database/client.ts";
+import { db } from "../database/client.ts";
 import { checks, monitors, settings } from "../database/schema.ts";
 import { checkPing } from "../monitors/ping.ts";
 import { checkHttp } from "../monitors/http.ts";
@@ -34,12 +34,10 @@ interface MonitorRow {
 const previousStatuses: Record<number, string> = {};
 
 async function getActiveMonitors(): Promise<MonitorRow[]> {
-  const db = await getDb();
   return await db.select().from(monitors).where(eq(monitors.active, 1));
 }
 
 async function saveCheck(monitorId: number, result: CheckResult) {
-  const db = await getDb();
   await db.insert(checks).values({
     monitorId,
     status: result.status,
@@ -101,7 +99,6 @@ const FAVICON_REFRESH_INTERVAL = 3600; // check favicons every 3600 ticks (every
 
 async function cleanupOldChecks() {
   try {
-    const db = await getDb();
     const rows = await db.select()
       .from(settings)
       .where(eq(settings.key, "retention_days"))
@@ -121,7 +118,6 @@ async function cleanupOldChecks() {
 
 async function refreshStaleFavicons() {
   try {
-    const db = await getDb();
     const allMonitors = await db.select().from(monitors);
     const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     for (const m of allMonitors) {
@@ -151,7 +147,6 @@ export function startScheduler() {
   const runDueMonitors = async () => {
     try {
       const activeMonitors = await getActiveMonitors();
-      const db = await getDb();
 
       for (const monitor of activeMonitors) {
         try {

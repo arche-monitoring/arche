@@ -1,11 +1,10 @@
-import { getDb } from "../database/client.ts";
+import { db } from "../database/client.ts";
 import { settings } from "../database/schema.ts";
 import { eq } from "drizzle-orm";
 import { logger } from "../utils/logger.ts";
 
 async function getWebhookUrl(): Promise<string> {
   try {
-    const db = await getDb();
     const row = await db.select().from(settings).where(
       eq(settings.key, "discord_webhook_url"),
     ).limit(1);
