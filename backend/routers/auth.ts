@@ -3,13 +3,11 @@ import { getDb } from "../database/client.ts";
 import { settings } from "../database/schema.ts";
 import { eq } from "drizzle-orm";
 import {
-  addToken,
-  generateToken,
-  getUsernameFromToken,
   hashPassword,
   rateLimit,
-  removeToken,
+  signToken,
   verifyPassword,
+  verifyToken,
 } from "../middleware/auth.ts";
 
 const router = new Hono();
@@ -59,23 +57,18 @@ router.post("/login", rateLimit(5, 60_000), async (c) => {
     return c.json({ error: "Invalid username or password" }, 401);
   }
 
-  const token = generateToken();
-  addToken(token, username);
+  const token = await signToken(username);
   return c.json({ token, username });
 });
 
 router.post("/logout", (c) => {
-  const authHeader = c.req.header("Authorization");
-  if (authHeader?.startsWith("Bearer ")) {
-    removeToken(authHeader.slice(7));
-  }
   return c.json({ success: true });
 });
 
 router.get("/me", async (c) => {
   const authHeader = c.req.header("Authorization");
   if (authHeader?.startsWith("Bearer ")) {
-    const username = getUsernameFromToken(authHeader.slice(7));
+    const username = await verifyToken(authHeader.slice(7));
     if (username) {
       return c.json({ authenticated: true, username });
     }
@@ -120,8 +113,7 @@ router.post("/setup", rateLimit(3, 60_000), async (c) => {
       set: { value: passwordHash },
     });
 
-  const token = generateToken();
-  addToken(token, username);
+  const token = await signToken(username);
   return c.json({ token, username });
 });
 
@@ -131,7 +123,7 @@ router.post("/change-credentials", rateLimit(5, 60_000), async (c) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
   const token = authHeader.slice(7);
-  const currentUser = getUsernameFromToken(token);
+  const currentUser = await verifyToken(token);
   if (!currentUser) {
     return c.json({ error: "Unauthorized" }, 401);
   }
@@ -171,9 +163,7 @@ router.post("/change-credentials", rateLimit(5, 60_000), async (c) => {
       set: { value: newPasswordHash },
     });
 
-  removeToken(token);
-  const newToken = generateToken();
-  addToken(newToken, newUsername);
+  const newToken = await signToken(newUsername);
 
   return c.json({ token: newToken, username: newUsername });
 });

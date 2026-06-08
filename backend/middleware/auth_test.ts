@@ -1,41 +1,37 @@
-import { assertEquals, assertExists, assertMatch } from "@std/assert";
+import { assertEquals, assertExists } from "@std/assert";
 import {
-  addToken,
   authMiddleware,
-  generateToken,
-  getUsernameFromToken,
   hashPassword,
   rateLimit,
-  removeToken,
+  setJwtSecret,
+  signToken,
   verifyPassword,
+  verifyToken,
 } from "./auth.ts";
 
-Deno.test("generateToken produces 64-character hex string", () => {
-  const token = generateToken();
-  assertEquals(token.length, 64);
-  assertMatch(token, /^[0-9a-f]{64}$/);
+const TEST_SECRET = "test-secret-for-jwt-testing-0123456789abcdef";
+setJwtSecret(TEST_SECRET);
+
+Deno.test("signToken and verifyToken round-trip", async () => {
+  const token = await signToken("alice");
+  assertExists(token);
+  assertEquals(typeof token, "string");
+
+  const username = await verifyToken(token);
+  assertEquals(username, "alice");
 });
 
-Deno.test("generateToken produces unique tokens", () => {
-  const tokens = new Set(Array.from({ length: 100 }, () => generateToken()));
-  assertEquals(tokens.size, 100);
+Deno.test("verifyToken returns null for invalid token", async () => {
+  const result = await verifyToken("not-a-valid-jwt");
+  assertEquals(result, null);
 });
 
-Deno.test("addToken and getUsernameFromToken round-trip", () => {
-  const token = generateToken();
-  addToken(token, "alice");
-  assertEquals(getUsernameFromToken(token), "alice");
-});
-
-Deno.test("removeToken deletes token", () => {
-  const token = generateToken();
-  addToken(token, "alice");
-  removeToken(token);
-  assertEquals(getUsernameFromToken(token), null);
-});
-
-Deno.test("getUsernameFromToken returns null for non-existent token", () => {
-  assertEquals(getUsernameFromToken("nonexistent"), null);
+Deno.test("verifyToken returns null for tampered token", async () => {
+  const token = await signToken("alice");
+  const prefix = token.split(".").slice(0, 2).join(".");
+  const tampered = prefix + ".invalidsignature";
+  const result = await verifyToken(tampered);
+  assertEquals(result, null);
 });
 
 Deno.test("hashPassword and verifyPassword round-trip", async () => {
@@ -72,7 +68,7 @@ Deno.test("rateLimit returns 429 after max attempts", async () => {
       json: (body: unknown, status?: number) => Response;
     };
     // deno-lint-ignore no-explicit-any
-    await handler(ctx as any, () => {});
+    await handler(ctx as any, () => Promise.resolve());
     // @ts-ignore: accessing status
     if (ctx.status === 429) break;
     callCount++;
@@ -90,6 +86,7 @@ Deno.test("authMiddleware allows public paths", async () => {
   let nextCalled = false;
   await authMiddleware(c, () => {
     nextCalled = true;
+    return Promise.resolve();
   });
   assertEquals(nextCalled, true);
 });
@@ -108,6 +105,7 @@ Deno.test("authMiddleware rejects missing Authorization header", async () => {
   let nextCalled = false;
   await authMiddleware(c, () => {
     nextCalled = true;
+    return Promise.resolve();
   });
   assertEquals(nextCalled, false);
 });
@@ -126,13 +124,13 @@ Deno.test("authMiddleware rejects invalid Bearer token", async () => {
   let nextCalled = false;
   await authMiddleware(c, () => {
     nextCalled = true;
+    return Promise.resolve();
   });
   assertEquals(nextCalled, false);
 });
 
 Deno.test("authMiddleware allows valid Bearer token", async () => {
-  const token = generateToken();
-  addToken(token, "alice");
+  const token = await signToken("alice");
 
   // deno-lint-ignore no-explicit-any
   const c: any = {
@@ -147,6 +145,7 @@ Deno.test("authMiddleware allows valid Bearer token", async () => {
   let nextCalled = false;
   await authMiddleware(c, () => {
     nextCalled = true;
+    return Promise.resolve();
   });
   assertEquals(nextCalled, true);
 });
@@ -165,6 +164,7 @@ Deno.test("authMiddleware allows public /api/auth/* paths", async () => {
   let nextCalled = false;
   await authMiddleware(c, () => {
     nextCalled = true;
+    return Promise.resolve();
   });
   assertEquals(nextCalled, true);
 });
@@ -183,6 +183,7 @@ Deno.test("authMiddleware allows public /api/public/* paths", async () => {
   let nextCalled = false;
   await authMiddleware(c, () => {
     nextCalled = true;
+    return Promise.resolve();
   });
   assertEquals(nextCalled, true);
 });

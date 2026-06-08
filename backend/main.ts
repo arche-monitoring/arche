@@ -10,7 +10,9 @@ import { settingsRouter } from "./routers/settings.ts";
 import { statusPagesRouter } from "./routers/status-pages.ts";
 import { publicRouter } from "./routers/public.ts";
 import { authRouter } from "./routers/auth.ts";
-import { authMiddleware } from "./middleware/auth.ts";
+import { authMiddleware, setJwtSecret } from "./middleware/auth.ts";
+import { settings } from "./database/schema.ts";
+import { eq } from "drizzle-orm";
 import { startScheduler, stopScheduler } from "./services/scheduler.ts";
 
 const app = new Hono();
@@ -70,7 +72,27 @@ if (isDev) {
 }
 
 const config = loadConfig();
-await getDb();
+const db = await getDb();
+
+const envSecret = Deno.env.get("JWT_SECRET");
+if (envSecret) {
+  setJwtSecret(envSecret);
+} else {
+  const rows = await db.select().from(settings).where(
+    eq(settings.key, "jwt_secret"),
+  );
+  if (rows[0]?.value) {
+    setJwtSecret(rows[0].value);
+  } else {
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    const secret = Array.from(bytes)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    await db.insert(settings).values({ key: "jwt_secret", value: secret });
+    setJwtSecret(secret);
+  }
+}
 
 startScheduler();
 

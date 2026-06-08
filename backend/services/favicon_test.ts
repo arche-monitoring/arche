@@ -4,7 +4,7 @@ import { fetchFavicon } from "./favicon.ts";
 Deno.test("fetchFavicon returns null for invalid domain", async () => {
   const origFetch = globalThis.fetch;
   globalThis.fetch = (_input: URL | RequestInfo, _init?: RequestInit) => {
-    throw new TypeError("fetch failed");
+    return Promise.reject(new TypeError("fetch failed"));
   };
 
   try {
@@ -25,12 +25,14 @@ Deno.test("fetchFavicon falls through to null when all sources fail", async () =
       urlStr.includes("favicon.ico") ||
       urlStr.includes("google.com/s2/favicons")
     ) {
-      return new Response("not found", { status: 404 });
+      return Promise.resolve(new Response("not found", { status: 404 }));
     }
-    return new Response("<html><head></head></html>", {
-      status: 200,
-      headers: { "Content-Type": "text/html" },
-    });
+    return Promise.resolve(
+      new Response("<html><head></head></html>", {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      }),
+    );
   };
 
   try {

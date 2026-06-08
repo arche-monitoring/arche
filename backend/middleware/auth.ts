@@ -1,32 +1,46 @@
 import type { Context, Next } from "hono";
+import * as jose from "jose";
 
-const tokens = new Map<string, { username: string; expiresAt: number }>();
-const TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
-const PUBLIC_PATHS = ["/api/auth", "/api/health", "/api/public"];
+let jwtSecret: Uint8Array | null = null;
 
-export function addToken(token: string, username: string): void {
-  tokens.set(token, { username, expiresAt: Date.now() + TOKEN_EXPIRY_MS });
+export function setJwtSecret(secret: string): void {
+  jwtSecret = new TextEncoder().encode(secret);
 }
 
-export function removeToken(token: string): void {
-  tokens.delete(token);
+function getJwtKey(): Uint8Array {
+  if (jwtSecret) return jwtSecret;
+  const envSecret = Deno.env.get("JWT_SECRET");
+  if (envSecret) {
+    jwtSecret = new TextEncoder().encode(envSecret);
+    return jwtSecret;
+  }
+  throw new Error(
+    "JWT secret not configured. Set JWT_SECRET env var or call setJwtSecret().",
+  );
 }
 
-export function getUsernameFromToken(token: string): string | null {
-  const entry = tokens.get(token);
-  if (!entry) return null;
-  if (Date.now() > entry.expiresAt) {
-    tokens.delete(token);
+const TOKEN_EXPIRY = "7d";
+
+export async function signToken(username: string): Promise<string> {
+  const secret = getJwtKey();
+  return await new jose.SignJWT({ sub: username })
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime(TOKEN_EXPIRY)
+    .setIssuedAt()
+    .sign(secret);
+}
+
+export async function verifyToken(token: string): Promise<string | null> {
+  try {
+    const secret = getJwtKey();
+    const { payload } = await jose.jwtVerify(token, secret);
+    return (payload.sub as string) || null;
+  } catch {
     return null;
   }
-  return entry.username;
 }
 
-export function generateToken(): string {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
+const PUBLIC_PATHS = ["/api/auth", "/api/health", "/api/public"];
 
 export async function hashPassword(password: string): Promise<string> {
   const salt = crypto.getRandomValues(new Uint8Array(16));
@@ -122,7 +136,8 @@ export async function authMiddleware(c: Context, next: Next) {
   }
 
   const token = authHeader.slice(7);
-  if (!getUsernameFromToken(token)) {
+  const username = await verifyToken(token);
+  if (!username) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
