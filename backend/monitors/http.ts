@@ -32,10 +32,13 @@ function isBinaryContentType(contentType: string): boolean {
 export async function checkHttp(config: HttpConfig): Promise<CheckResult> {
   const start = Date.now();
   try {
+    const url = config.target.startsWith("http://") || config.target.startsWith("https://")
+      ? config.target
+      : `https://${config.target}`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), config.timeout * 1000);
 
-    const response = await fetch(config.target, {
+    const response = await fetch(url, {
       method: config.method,
       signal: controller.signal,
     });
