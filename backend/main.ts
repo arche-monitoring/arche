@@ -61,7 +61,10 @@ if (isDev) {
       const content = await Deno.readFile("./frontend/dist/index.html");
       return c.html(new TextDecoder().decode(content));
     } catch {
-      return c.text("Frontend not built. Run: cd frontend && npm run build", 503);
+      return c.text(
+        "Frontend not built. Run: cd frontend && npm run build",
+        503,
+      );
     }
   });
 }

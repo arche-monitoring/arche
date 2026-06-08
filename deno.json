@@ -21,10 +21,10 @@
     "@std/testing": "jsr:@std/testing@^1.0.11"
   },
   "lint": {
-    "exclude": ["frontend"]
+    "exclude": ["frontend", "*md"]
   },
   "fmt": {
-    "exclude": ["frontend"]
+    "exclude": ["frontend", "*md"]
   },
   "exclude": ["frontend"]
 }
