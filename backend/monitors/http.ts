@@ -8,6 +8,27 @@ interface HttpConfig {
   timeout: number;
 }
 
+const BINARY_TYPES = [
+  "image/",
+  "video/",
+  "audio/",
+  "font/",
+  "application/octet-stream",
+  "application/pdf",
+  "application/zip",
+  "application/gzip",
+  "application/x-tar",
+  "application/x-gzip",
+  "application/x-bzip2",
+  "application/vnd.rar",
+  "application/x-7z-compressed",
+];
+
+function isBinaryContentType(contentType: string): boolean {
+  const ct = contentType.toLowerCase();
+  return BINARY_TYPES.some((t) => ct.startsWith(t));
+}
+
 export async function checkHttp(config: HttpConfig): Promise<CheckResult> {
   const start = Date.now();
   try {
@@ -22,11 +43,25 @@ export async function checkHttp(config: HttpConfig): Promise<CheckResult> {
 
     const elapsed = Date.now() - start;
     const ok = response.status === config.expectedStatus;
+    const contentType = response.headers.get("content-type") ?? "";
+
+    let responseBody: string | undefined;
+    if (!isBinaryContentType(contentType)) {
+      try {
+        const text = await response.clone().text();
+        if (text.length > 0) {
+          responseBody = text.slice(0, 10_000);
+        }
+      } catch {
+        // ignore read errors
+      }
+    }
 
     return {
       status: ok ? "up" : "down",
       responseTimeMs: elapsed,
       statusCode: response.status,
+      responseBody,
       error: ok
         ? undefined
         : `Expected ${config.expectedStatus}, got ${response.status}`,

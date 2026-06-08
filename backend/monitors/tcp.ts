@@ -17,10 +17,29 @@ export async function checkTcp(
       signal: controller.signal,
     });
     clearTimeout(timer);
+
+    let banner = "";
+    try {
+      const readController = new AbortController();
+      const readTimer = setTimeout(() => readController.abort(), 2000);
+      const buf = new Uint8Array(1024);
+      const n = await conn.read(buf);
+      clearTimeout(readTimer);
+      if (n !== null) {
+        banner = new TextDecoder().decode(buf.subarray(0, n)).trim();
+      }
+    } catch {
+      // no banner / timeout reading banner
+    }
+
     conn.close();
 
     const elapsed = Date.now() - start;
-    return { status: "up", responseTimeMs: elapsed };
+    return {
+      status: "up",
+      responseTimeMs: elapsed,
+      responseBody: banner || undefined,
+    };
   } catch (err) {
     logger.error(`TCP error for ${hostname}:${port}:`, err);
     return { status: "down", error: String(err) };

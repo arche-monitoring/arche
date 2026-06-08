@@ -45,6 +45,7 @@ async function saveCheck(monitorId: number, result: CheckResult) {
     responseTimeMs: result.responseTimeMs ?? null,
     statusCode: result.statusCode ?? null,
     errorMsg: result.error ?? null,
+    responseBody: result.responseBody ?? null,
     checkedAt: new Date().toISOString(),
   });
 }

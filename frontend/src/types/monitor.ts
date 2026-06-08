@@ -42,6 +42,7 @@ export interface Check {
   responseTimeMs: number | null
   statusCode: number | null
   errorMsg: string | null
+  responseBody: string | null
   checkedAt: string
 }
 
