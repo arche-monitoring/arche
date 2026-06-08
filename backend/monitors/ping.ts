@@ -5,6 +5,7 @@ export interface CheckResult {
   responseTimeMs?: number;
   statusCode?: number;
   error?: string;
+  responseBody?: string;
 }
 
 export async function checkPing(
@@ -20,17 +21,18 @@ export async function checkPing(
 
     const process = new Deno.Command(cmd[0], {
       args: cmd.slice(1),
-      stdout: "null",
+      stdout: "piped",
       stderr: "null",
     });
 
-    const { success } = await process.output();
+    const { success, stdout } = await process.output();
     const elapsed = Date.now() - start;
+    const output = new TextDecoder().decode(stdout).trim();
 
     if (success) {
-      return { status: "up", responseTimeMs: elapsed };
+      return { status: "up", responseTimeMs: elapsed, responseBody: output };
     }
-    return { status: "down", error: "Ping failed" };
+    return { status: "down", error: "Ping failed", responseBody: output };
   } catch (err) {
     logger.error(`Ping error for ${target}:`, err);
     return { status: "error", error: String(err) };

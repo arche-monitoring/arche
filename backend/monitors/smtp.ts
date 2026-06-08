@@ -18,6 +18,7 @@ export async function checkSmtp(
       } catch { /* ignore */ }
     }, timeout * 1000);
     const buf = new Uint8Array(4096);
+    const responseParts: string[] = [];
 
     const write = async (cmd: string) => {
       const encoder = new TextEncoder();
@@ -36,6 +37,7 @@ export async function checkSmtp(
         const n = await conn.read(buf);
         if (n === null) break;
         const text = decoder.decode(buf.subarray(0, n));
+        responseParts.push(text.trim());
         if (text.includes("\r\n")) break;
       }
     };
@@ -56,7 +58,11 @@ export async function checkSmtp(
     conn.close();
 
     const elapsed = Date.now() - start;
-    return { status: "up", responseTimeMs: elapsed };
+    return {
+      status: "up",
+      responseTimeMs: elapsed,
+      responseBody: responseParts.join("\n") || undefined,
+    };
   } catch (err) {
     logger.error(`SMTP error for ${hostname}:${port}:`, err);
     return { status: "down", error: String(err) };

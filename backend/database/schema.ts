@@ -29,6 +29,7 @@ export const checks = sqliteTable("checks", {
   responseTimeMs: integer("response_time_ms"),
   statusCode: integer("status_code"),
   errorMsg: text("error_msg"),
+  responseBody: text("response_body"),
   checkedAt: text("checked_at").default(sql`(datetime('now'))`),
 });
 

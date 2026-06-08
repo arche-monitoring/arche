@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useMonitor, useChecks, useUptime } from "@/hooks/use-monitors"
 import { MonitorStatusBadge } from "@/components/monitors/monitor-status-badge"
@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts"
-import { ArrowLeft, Globe, Terminal, Server, Mail, MessageSquare } from "lucide-react"
+import { ArrowLeft, Globe, Terminal, Server, Mail, MessageSquare, ChevronDown, ChevronUp } from "lucide-react"
 
 const typeIcons: Record<string, React.ReactNode> = {
   ping: <Terminal className="h-4 w-4" />,
@@ -22,6 +22,7 @@ export default function MonitorDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const monitorId = parseInt(id ?? "0", 10)
+  const [expandedCheckId, setExpandedCheckId] = useState<number | null>(null)
 
   const { data: monitor, isLoading: monLoading } = useMonitor(monitorId)
   const { data: checks } = useChecks(monitorId)
@@ -176,27 +177,48 @@ export default function MonitorDetail() {
             <CardContent>
               <div className="space-y-2">
                 {(checks ?? []).slice(0, 20).map((check) => (
-                  <div
-                    key={check.id}
-                    className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`h-2 w-2 rounded-full ${
-                          check.status === "up" ? "bg-emerald-400" : "bg-red-400"
-                        }`}
-                      />
-                      <span className="capitalize">{check.status}</span>
-                      {check.responseTimeMs && (
-                        <span className="text-muted-foreground">{check.responseTimeMs}ms</span>
-                      )}
-                      {check.statusCode && (
-                        <span className="text-muted-foreground">HTTP {check.statusCode}</span>
-                      )}
+                  <div key={check.id}>
+                    <div
+                      className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm cursor-pointer transition-colors ${
+                        expandedCheckId === check.id ? "border-primary/50" : ""
+                      }`}
+                      onClick={() =>
+                        setExpandedCheckId(
+                          expandedCheckId === check.id ? null : check.id,
+                        )
+                      }
+                    >
+                      <div className="flex items-center gap-3">
+                        {check.responseBody && (
+                          <span className="text-muted-foreground">
+                            {expandedCheckId === check.id
+                              ? <ChevronUp className="h-4 w-4" />
+                              : <ChevronDown className="h-4 w-4" />
+                            }
+                          </span>
+                        )}
+                        <span
+                          className={`h-2 w-2 rounded-full ${
+                            check.status === "up" ? "bg-emerald-400" : "bg-red-400"
+                          }`}
+                        />
+                        <span className="capitalize">{check.status}</span>
+                        {check.responseTimeMs && (
+                          <span className="text-muted-foreground">{check.responseTimeMs}ms</span>
+                        )}
+                        {check.statusCode && (
+                          <span className="text-muted-foreground">HTTP {check.statusCode}</span>
+                        )}
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {check.checkedAt ? new Date(check.checkedAt.replace(" ", "T")).toLocaleString() : "—"}
+                      </span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
-                      {check.checkedAt ? new Date(check.checkedAt.replace(" ", "T")).toLocaleString() : "—"}
-                    </span>
+                    {expandedCheckId === check.id && check.responseBody && (
+                      <pre className="mt-1 rounded-lg border bg-muted p-3 text-xs overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap break-all">
+                        {check.responseBody}
+                      </pre>
+                    )}
                   </div>
                 ))}
               </div>
