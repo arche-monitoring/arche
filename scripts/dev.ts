@@ -21,7 +21,7 @@ const backendCmd = new Deno.Command(Deno.execPath(), {
   stderr: "inherit",
 });
 
-const frontendCmd = new Deno.Command("npm", {
+const frontendCmd = new Deno.Command("deno", {
   args: ["run", "dev"],
   cwd: "frontend",
   stdout: "inherit",

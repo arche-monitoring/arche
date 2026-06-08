@@ -53,7 +53,6 @@ if (isDev) {
   };
 
   app.use("/assets/*", serveStatic(staticOpts));
-  app.use("/favicon.svg", serveStatic(staticOpts));
 
   app.get("/*", async (c) => {
     if (c.req.path.startsWith("/api/")) {
