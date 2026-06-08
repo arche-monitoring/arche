@@ -189,7 +189,7 @@ export default function MonitorDetail() {
                       }
                     >
                       <div className="flex items-center gap-3">
-                        {check.responseBody && (
+                        {(check.responseBody || check.errorMsg) && (
                           <span className="text-muted-foreground">
                             {expandedCheckId === check.id
                               ? <ChevronUp className="h-4 w-4" />
@@ -214,9 +214,9 @@ export default function MonitorDetail() {
                         {check.checkedAt ? new Date(check.checkedAt.replace(" ", "T")).toLocaleString() : "—"}
                       </span>
                     </div>
-                    {expandedCheckId === check.id && check.responseBody && (
+                    {expandedCheckId === check.id && (check.responseBody || check.errorMsg) && (
                       <pre className="mt-1 rounded-lg border bg-muted p-3 text-xs overflow-x-auto max-h-48 overflow-y-auto whitespace-pre-wrap break-all">
-                        {check.responseBody}
+                        {check.errorMsg ? `Error: ${check.errorMsg}\n\n` : ""}{check.responseBody ?? ""}
                       </pre>
                     )}
                   </div>
