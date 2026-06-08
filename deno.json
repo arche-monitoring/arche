@@ -21,6 +21,7 @@
     "@std/testing": "jsr:@std/testing@^1.0.11",
     "jose": "npm:jose@^6.0.10"
   },
+  "nodeModulesDir": "manual",
   "lint": {
     "exclude": ["frontend", "*md"]
   },
