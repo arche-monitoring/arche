@@ -9,7 +9,6 @@ import type { Monitor, MonitorFormData, MonitorType } from "@/types/monitor"
 const monitorTypes: { value: MonitorType; label: string }[] = [
   { value: "ping", label: "Ping" },
   { value: "http", label: "HTTP(S)" },
-  { value: "port", label: "Port" },
   { value: "imap", label: "IMAP" },
   { value: "smtp", label: "SMTP" },
   { value: "dns", label: "DNS" },
@@ -85,7 +84,7 @@ export function MonitorForm({ open, onOpenChange, onSubmit, editMonitor }: Monit
   }
 
   const isHttp = form.type === "http"
-  const needsPort = form.type === "port" || form.type === "imap" || form.type === "smtp" || form.type === "tcp"
+  const needsPort = form.type === "imap" || form.type === "smtp" || form.type === "tcp"
   const needsAuth = form.type === "imap"
 
   return (
@@ -152,7 +151,7 @@ export function MonitorForm({ open, onOpenChange, onSubmit, editMonitor }: Monit
                 type="number"
                 value={form.port}
                 onChange={(e) => update("port", e.target.value)}
-                placeholder={form.type === "imap" ? "993" : form.type === "smtp" ? "587" : form.type === "tcp" ? "80" : "80"}
+                placeholder={form.type === "imap" ? "993" : form.type === "smtp" ? "587" : "80"}
               />
             </div>
           )}

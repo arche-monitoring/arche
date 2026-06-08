@@ -2,13 +2,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { MonitorStatusBadge } from "./monitor-status-badge"
 import type { Monitor } from "@/types/monitor"
-import { Pencil, Trash2, Globe, Terminal, Server, Mail, MessageSquare, Search, Network } from "lucide-react"
+import { Pencil, Trash2, Globe, Terminal, Mail, MessageSquare, Search, Network } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 const typeIcons: Record<string, React.ReactNode> = {
   ping: <Terminal className="h-3.5 w-3.5" />,
   http: <Globe className="h-3.5 w-3.5" />,
-  port: <Server className="h-3.5 w-3.5" />,
   imap: <Mail className="h-3.5 w-3.5" />,
   smtp: <MessageSquare className="h-3.5 w-3.5" />,
   dns: <Search className="h-3.5 w-3.5" />,

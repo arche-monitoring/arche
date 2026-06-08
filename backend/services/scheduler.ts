@@ -2,7 +2,6 @@ import { getDb } from "../database/client.ts";
 import { checks, monitors, settings } from "../database/schema.ts";
 import { checkPing } from "../monitors/ping.ts";
 import { checkHttp } from "../monitors/http.ts";
-import { checkPort } from "../monitors/port.ts";
 import { checkImap } from "../monitors/imap.ts";
 import { checkSmtp } from "../monitors/smtp.ts";
 import { checkDns } from "../monitors/dns.ts";
@@ -61,12 +60,6 @@ async function runCheck(monitor: MonitorRow): Promise<CheckResult> {
         expectedStatus: monitor.expectedStatus || 200,
         timeout: monitor.timeout ?? 30,
       });
-    case "port":
-      return await checkPort(
-        monitor.target,
-        monitor.port || 80,
-        monitor.timeout ?? 30,
-      );
     case "imap":
       return await checkImap({
         host: monitor.target,
