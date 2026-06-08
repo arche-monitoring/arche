@@ -71,7 +71,7 @@ Deno.test("rateLimit returns 429 after max attempts", async () => {
       req: { header: () => string };
       json: (body: unknown, status?: number) => Response;
     };
-    await handler(ctx, () => undefined);
+    await handler(ctx as any, async () => {});
     // @ts-ignore: accessing status
     if (ctx.status === 429) break;
     callCount++;
@@ -87,7 +87,7 @@ Deno.test("authMiddleware allows public paths", async () => {
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => {
+  await authMiddleware(c, async () => {
     nextCalled = true;
   });
   assertEquals(nextCalled, true);
@@ -105,7 +105,7 @@ Deno.test("authMiddleware rejects missing Authorization header", async () => {
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => {
+  await authMiddleware(c, async () => {
     nextCalled = true;
   });
   assertEquals(nextCalled, false);
@@ -123,7 +123,7 @@ Deno.test("authMiddleware rejects invalid Bearer token", async () => {
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => {
+  await authMiddleware(c, async () => {
     nextCalled = true;
   });
   assertEquals(nextCalled, false);
@@ -144,7 +144,7 @@ Deno.test("authMiddleware allows valid Bearer token", async () => {
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => {
+  await authMiddleware(c, async () => {
     nextCalled = true;
   });
   assertEquals(nextCalled, true);
@@ -162,7 +162,7 @@ Deno.test("authMiddleware allows public /api/auth/* paths", async () => {
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => {
+  await authMiddleware(c, async () => {
     nextCalled = true;
   });
   assertEquals(nextCalled, true);
@@ -180,7 +180,7 @@ Deno.test("authMiddleware allows public /api/public/* paths", async () => {
   };
 
   let nextCalled = false;
-  await authMiddleware(c, () => {
+  await authMiddleware(c, async () => {
     nextCalled = true;
   });
   assertEquals(nextCalled, true);

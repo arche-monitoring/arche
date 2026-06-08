@@ -3,7 +3,7 @@ import { fetchFavicon } from "./favicon.ts";
 
 Deno.test("fetchFavicon returns null for invalid domain", async () => {
   const origFetch = globalThis.fetch;
-  globalThis.fetch = (_input: URL | RequestInfo, _init?: RequestInit) => {
+  globalThis.fetch = async (_input: URL | RequestInfo, _init?: RequestInit) => {
     throw new TypeError("fetch failed");
   };
 
@@ -18,7 +18,7 @@ Deno.test("fetchFavicon returns null for invalid domain", async () => {
 Deno.test("fetchFavicon falls through to null when all sources fail", async () => {
   const origFetch = globalThis.fetch;
   let callCount = 0;
-  globalThis.fetch = (input: URL | RequestInfo, _init?: RequestInit) => {
+  globalThis.fetch = async (input: URL | RequestInfo, _init?: RequestInit) => {
     callCount++;
     const urlStr = typeof input === "string" ? input : input.toString();
     if (
