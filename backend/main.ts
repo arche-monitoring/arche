@@ -64,7 +64,7 @@ if (isDev) {
       return c.html(new TextDecoder().decode(content));
     } catch {
       return c.text(
-        "Frontend not built. Run: cd frontend && npm run build",
+        "Frontend not built. Run: cd frontend && deno run build",
         503,
       );
     }
@@ -78,9 +78,10 @@ const envSecret = Deno.env.get("JWT_SECRET");
 if (envSecret) {
   setJwtSecret(envSecret);
 } else {
-  const rows = await db.select().from(settings).where(
-    eq(settings.key, "jwt_secret"),
-  );
+  const rows = await db
+    .select()
+    .from(settings)
+    .where(eq(settings.key, "jwt_secret"));
   if (rows[0]?.value) {
     setJwtSecret(rows[0].value);
   } else {
