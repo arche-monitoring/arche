@@ -73,25 +73,20 @@ if (isDev) {
 const config = loadConfig();
 const db = await getDb();
 
-const envSecret = Deno.env.get("JWT_SECRET");
-if (envSecret) {
-  setJwtSecret(envSecret);
+const rows = await db
+  .select()
+  .from(settings)
+  .where(eq(settings.key, "jwt_secret"));
+if (rows[0]?.value) {
+  setJwtSecret(rows[0].value);
 } else {
-  const rows = await db
-    .select()
-    .from(settings)
-    .where(eq(settings.key, "jwt_secret"));
-  if (rows[0]?.value) {
-    setJwtSecret(rows[0].value);
-  } else {
-    const bytes = new Uint8Array(32);
-    crypto.getRandomValues(bytes);
-    const secret = Array.from(bytes)
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-    await db.insert(settings).values({ key: "jwt_secret", value: secret });
-    setJwtSecret(secret);
-  }
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  const secret = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  await db.insert(settings).values({ key: "jwt_secret", value: secret });
+  setJwtSecret(secret);
 }
 
 startScheduler();

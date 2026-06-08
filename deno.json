@@ -1,8 +1,8 @@
 {
   "tasks": {
-    "dev": "deno run --allow-net --allow-read --allow-write --allow-env --allow-run --allow-sys --watch backend/main.ts",
+    "dev": "deno run --v8-flags='--max-heap-size=256' --allow-net --allow-read --allow-write --allow-env --allow-run --allow-sys --watch backend/main.ts",
     "dev:frontend": "cd frontend && deno run dev",
-    "start": "deno run --allow-net --allow-read --allow-write --allow-env --allow-run --allow-sys backend/main.ts",
+    "start": "deno run --no-check --v8-flags='--max-heap-size=256,--optimize-for-size' --allow-net --allow-read --allow-write --allow-env --allow-run --allow-sys backend/main.ts",
     "lint": "deno lint",
     "lint:fix": "deno lint --fix",
     "fmt": "deno fmt --check",

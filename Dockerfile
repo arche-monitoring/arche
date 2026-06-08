@@ -1,6 +1,6 @@
-FROM denoland/deno:debian
+FROM denoland/deno:alpine
 
-RUN apt-get update && apt-get install -y --no-install-recommends iputils-ping && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache iputils
 
 WORKDIR /app
 
@@ -28,4 +28,4 @@ VOLUME [ "/app/data" ]
 ENV DB_PATH=/app/data/arche.db
 ENV PORT=3000
 
-CMD ["deno", "run", "--allow-net", "--allow-read", "--allow-write", "--allow-env", "--allow-run", "--allow-sys", "backend/main.ts"]
+CMD ["deno", "run", "start"]

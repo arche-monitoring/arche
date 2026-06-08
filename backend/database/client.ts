@@ -20,16 +20,8 @@ export async function getDb() {
     rawDb.execute("PRAGMA foreign_keys=ON");
 
     // deno-lint-ignore require-await
-    dbInstance = drizzle(async (sql, params, method) => {
+    dbInstance = drizzle(async (sql, params, _method) => {
       try {
-        console.log(
-          "SQL:",
-          sql,
-          "PARAMS:",
-          JSON.stringify(params),
-          "METHOD:",
-          method,
-        );
         const rows = rawDb!.query(sql, params as Params);
         return { rows: rows as unknown as Record<string, unknown>[] };
       } catch (e) {

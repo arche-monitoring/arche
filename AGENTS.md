@@ -57,10 +57,7 @@ deno task start
   `--allow-net --allow-read --allow-write --allow-env --allow-run --allow-sys`.
   The `deno task` commands include these; always include them when running
   manually.
-- **Env:** Copy `.env.example` to `.env`. Required vars: `PORT` (3000),
-  `DB_PATH` (./data/arche.db). Optional: `TELEGRAM_BOT_TOKEN`,
-  `TELEGRAM_CHAT_ID`, `DISCORD_WEBHOOK_URL` (alerts silently skip if unset at
-  first run; tokens are read from the DB settings table at runtime).
+- **Env:** Copy `.env.example` to `.env`. Required vars: `DB_PATH` (./data/arche.db).
 - **Auth:** Token-based auth with PBKDF2 password hashing and Bearer tokens. The
   first user is created via the `/api/auth/setup` endpoint on initial launch.
   All API routes except `/api/auth/setup`, `/api/auth/login`, `/api/public/*`,
