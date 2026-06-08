@@ -11,6 +11,7 @@ export async function checkPing(
   target: string,
   timeout: number,
 ): Promise<CheckResult> {
+  target = target.replace(/^https?:\/\//i, "");
   const start = Date.now();
   try {
     const cmd = Deno.build.os === "windows"
