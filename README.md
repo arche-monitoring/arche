@@ -18,6 +18,8 @@
 
 Arche is a modern, beautiful and lightweight self-hosted monitoring tool.
 
+If you find Aperio useful, please consider becoming a sponsor: as an independent open-source project, we rely on community backing to keep Arche modern, lightweight, and actively maintained. Take a look at our GitHub Sponsors page to see how you can help.
+
 ## Features
 
 - **8 check types** — HTTP(S), Ping, TCP, Port scan, DNS resolution, IMAP login,
