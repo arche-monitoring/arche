@@ -1,18 +1,36 @@
-import { useMonitors } from "@/hooks/use-monitors"
+import { useState } from "react"
+import { useMonitors, useCreateMonitor } from "@/hooks/use-monitors"
 import { MonitorCard } from "@/components/monitors/monitor-card"
+import { MonitorForm } from "@/components/monitors/monitor-form"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import type { MonitorFormData } from "@/types/monitor"
+import { Plus } from "lucide-react"
 
 export default function Dashboard() {
   const { data: monitors, isLoading } = useMonitors()
+  const [formOpen, setFormOpen] = useState(false)
+  const createMonitor = useCreateMonitor()
+
+  const handleCreate = (data: MonitorFormData) => {
+    createMonitor.mutate(data)
+    setFormOpen(false)
+  }
 
   const upCount = monitors?.filter((m) => m.last_status === "up").length ?? 0
   const downCount = monitors?.filter((m) => m.last_status === "down" || m.last_status === "error").length ?? 0
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Overview of all your monitors.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Overview of all your monitors.</p>
+        </div>
+        <Button onClick={() => setFormOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          New Monitor
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -50,6 +68,12 @@ export default function Dashboard() {
           )}
         </div>
       )}
+
+      <MonitorForm
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        onSubmit={handleCreate}
+      />
     </div>
   )
 }
