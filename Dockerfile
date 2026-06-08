@@ -1,6 +1,4 @@
-FROM denoland/deno:alpine
-
-RUN apk add --no-cache iputils
+FROM denoland/deno:alpine AS builder
 
 WORKDIR /app
 
@@ -20,6 +18,20 @@ RUN cd frontend && deno task build
 
 # Copy backend source
 COPY backend/ ./backend/
+
+FROM denoland/deno:alpine
+
+RUN apk add --no-cache iputils
+
+WORKDIR /app
+
+# Copy backend runtime deps and source
+COPY --from=builder /app/deno.json /app/deno.lock ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/backend ./backend
+
+# Copy only the built frontend (no source or dev deps)
+COPY --from=builder /app/frontend/dist ./frontend/dist
 
 EXPOSE 3000
 
