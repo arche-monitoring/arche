@@ -1,7 +1,7 @@
 <h1 align="center">Arche</h1>
 
 <p align="center">
-<img src="assets/screenshot.png" alt="Arche Screenshot" width="100%">
+<img src="assets/dashboard.png" alt="Arche Screenshot" width="100%">
 </p>
 
 <p align="center">
