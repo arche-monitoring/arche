@@ -117,7 +117,7 @@ backend/
 │   ├── schema.ts        # Drizzle schema (monitors, checks, settings, status_pages)
 │   ├── client.ts        # SQLite init + auto-migration
 │   ├── drizzle.config.ts
-│   └── drizzle/         # Migration files (0000_initial, favicon cols, status_pages)
+│   └── drizzle/         # Single migration file (0000_initial.sql)
 ├── routers/             # Hono route handlers (auth, monitors, checks, settings, status-pages, public)
 ├── services/            # Scheduler (10s tick), Telegram alerts, Discord alerts, Favicon fetcher
 ├── monitors/            # Check implementations (http, ping, port, imap, smtp, dns, tcp)

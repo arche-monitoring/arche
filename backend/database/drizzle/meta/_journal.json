@@ -8,34 +8,6 @@
       "when": 1717000000000,
       "tag": "0000_initial",
       "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1780869667684,
-      "tag": "0001_broad_cerebro",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1780950000000,
-      "tag": "0002_add_status_pages",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1780956759263,
-      "tag": "0003_volatile_famine",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1781000000000,
-      "tag": "0004_add_dns_record_type",
-      "breakpoints": true
     }
   ]
 }
