@@ -69,7 +69,9 @@ Deno.test("GET /:id returns single status page", async () => {
   const res = await app.request(`/api/status-pages/${statusPageId}`);
   if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
   const body = await res.json();
-  if (body.id !== statusPageId) throw new Error(`Expected ${statusPageId}, got ${body.id}`);
+  if (body.id !== statusPageId) {
+    throw new Error(`Expected ${statusPageId}, got ${body.id}`);
+  }
   if (body.title !== "My Status Page") {
     throw new Error(`Expected ${"My Status Page"}, got ${body.title}`);
   }

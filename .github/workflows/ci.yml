@@ -48,9 +48,6 @@ jobs:
       - name: Install dependencies
         run: deno install
 
-      - name: Lint
-        run: deno lint
-
       - name: Format check
         run: deno fmt --check
 

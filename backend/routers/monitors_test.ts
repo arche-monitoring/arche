@@ -99,7 +99,9 @@ Deno.test("GET /:id returns single monitor", async () => {
   const res = await app.request(`/api/monitors/${monitorId}`);
   if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
   const body = await res.json();
-  if (body.id !== monitorId) throw new Error(`Expected ${monitorId}, got ${body.id}`);
+  if (body.id !== monitorId) {
+    throw new Error(`Expected ${monitorId}, got ${body.id}`);
+  }
   if (body.name !== "Test HTTP Monitor") {
     throw new Error(`Expected ${"Test HTTP Monitor"}, got ${body.name}`);
   }
