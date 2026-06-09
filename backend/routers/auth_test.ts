@@ -1,13 +1,19 @@
 import { Hono } from "hono";
+import { eq } from "drizzle-orm";
 import { authRouter } from "./auth.ts";
 import { setJwtSecret } from "../middleware/auth.ts";
+import { db } from "../database/client.ts";
+import { settings } from "../database/schema.ts";
 
 const TEST_SECRET = "test-secret-for-jwt-in-router-tests-abcdef";
 setJwtSecret(TEST_SECRET);
 
 const ip = (n: number) => ({ "x-forwarded-for": `127.0.0.${n}` });
 
-Deno.test("auth router setup", () => {});
+Deno.test("setup", async () => {
+  await db.delete(settings).where(eq(settings.key, "auth_username"));
+  await db.delete(settings).where(eq(settings.key, "auth_password_hash"));
+});
 
 Deno.test("POST /setup creates first user", async () => {
   const app = new Hono();

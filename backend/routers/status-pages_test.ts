@@ -1,6 +1,13 @@
 import { Hono } from "hono";
 import { statusPagesRouter } from "./status-pages.ts";
-Deno.test("status pages router setup", () => {});
+import { db } from "../database/client.ts";
+import { statusPages } from "../database/schema.ts";
+
+let statusPageId: number;
+
+Deno.test("setup", async () => {
+  await db.delete(statusPages);
+});
 
 Deno.test("GET / returns empty list initially", async () => {
   const app = new Hono();
@@ -31,9 +38,10 @@ Deno.test("POST / creates a status page", async () => {
   });
   if (res.status !== 201) throw new Error(`Expected ${201}, got ${res.status}`);
   const body = await res.json();
-  if (body.id == null) {
-    throw new Error(`Expected value to exist, got ${body.id}`);
+  if (body.id == null || typeof body.id !== "number") {
+    throw new Error(`Expected numeric id, got ${body.id}`);
   }
+  statusPageId = body.id;
   if (body.title !== "My Status Page") {
     throw new Error(`Expected ${"My Status Page"}, got ${body.title}`);
   }
@@ -58,10 +66,10 @@ Deno.test("GET /:id returns single status page", async () => {
   const app = new Hono();
   app.route("/api/status-pages", statusPagesRouter);
 
-  const res = await app.request("/api/status-pages/1");
+  const res = await app.request(`/api/status-pages/${statusPageId}`);
   if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
   const body = await res.json();
-  if (body.id !== 1) throw new Error(`Expected ${1}, got ${body.id}`);
+  if (body.id !== statusPageId) throw new Error(`Expected ${statusPageId}, got ${body.id}`);
   if (body.title !== "My Status Page") {
     throw new Error(`Expected ${"My Status Page"}, got ${body.title}`);
   }
@@ -79,7 +87,7 @@ Deno.test("PUT /:id updates a status page", async () => {
   const app = new Hono();
   app.route("/api/status-pages", statusPagesRouter);
 
-  const res = await app.request("/api/status-pages/1", {
+  const res = await app.request(`/api/status-pages/${statusPageId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -94,7 +102,7 @@ Deno.test("PUT /:id updates a status page", async () => {
     throw new Error(`Expected ${true}, got ${(await res.json()).success}`);
   }
 
-  const getRes = await app.request("/api/status-pages/1");
+  const getRes = await app.request(`/api/status-pages/${statusPageId}`);
   const body = await getRes.json();
   if (body.title !== "Updated Status Page") {
     throw new Error(`Expected ${"Updated Status Page"}, got ${body.title}`);
@@ -108,7 +116,7 @@ Deno.test("DELETE /:id removes a status page", async () => {
   const app = new Hono();
   app.route("/api/status-pages", statusPagesRouter);
 
-  const res = await app.request("/api/status-pages/1", {
+  const res = await app.request(`/api/status-pages/${statusPageId}`, {
     method: "DELETE",
   });
   if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
@@ -116,7 +124,7 @@ Deno.test("DELETE /:id removes a status page", async () => {
     throw new Error(`Expected ${true}, got ${(await res.json()).success}`);
   }
 
-  const getRes = await app.request("/api/status-pages/1");
+  const getRes = await app.request(`/api/status-pages/${statusPageId}`);
   if (getRes.status !== 404) {
     throw new Error(`Expected ${404}, got ${getRes.status}`);
   }

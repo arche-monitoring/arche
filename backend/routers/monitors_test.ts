@@ -1,6 +1,13 @@
 import { Hono } from "hono";
 import { monitorsRouter } from "./monitors.ts";
-Deno.test("monitors router setup", () => {});
+import { db } from "../database/client.ts";
+import { monitors } from "../database/schema.ts";
+
+let monitorId: number;
+
+Deno.test("setup", async () => {
+  await db.delete(monitors);
+});
 
 Deno.test("GET / returns empty list initially", async () => {
   const app = new Hono();
@@ -30,9 +37,10 @@ Deno.test("POST / creates a new monitor", async () => {
   });
   if (res.status !== 201) throw new Error(`Expected ${201}, got ${res.status}`);
   const body = await res.json();
-  if (body.id == null) {
-    throw new Error(`Expected value to exist, got ${body.id}`);
+  if (body.id == null || typeof body.id !== "number") {
+    throw new Error(`Expected numeric id, got ${body.id}`);
   }
+  monitorId = body.id;
   if (body.name !== "Test HTTP Monitor") {
     throw new Error(`Expected ${"Test HTTP Monitor"}, got ${body.name}`);
   }
@@ -88,10 +96,10 @@ Deno.test("GET /:id returns single monitor", async () => {
   const app = new Hono();
   app.route("/api/monitors", monitorsRouter);
 
-  const res = await app.request("/api/monitors/1");
+  const res = await app.request(`/api/monitors/${monitorId}`);
   if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
   const body = await res.json();
-  if (body.id !== 1) throw new Error(`Expected ${1}, got ${body.id}`);
+  if (body.id !== monitorId) throw new Error(`Expected ${monitorId}, got ${body.id}`);
   if (body.name !== "Test HTTP Monitor") {
     throw new Error(`Expected ${"Test HTTP Monitor"}, got ${body.name}`);
   }
@@ -109,7 +117,7 @@ Deno.test("PUT /:id updates a monitor", async () => {
   const app = new Hono();
   app.route("/api/monitors", monitorsRouter);
 
-  const res = await app.request("/api/monitors/1", {
+  const res = await app.request(`/api/monitors/${monitorId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -125,7 +133,7 @@ Deno.test("PUT /:id updates a monitor", async () => {
     throw new Error(`Expected ${true}, got ${body.success}`);
   }
 
-  const getRes = await app.request("/api/monitors/1");
+  const getRes = await app.request(`/api/monitors/${monitorId}`);
   const updated = await getRes.json();
   if (updated.name !== "Updated HTTP Monitor") {
     throw new Error(`Expected ${"Updated HTTP Monitor"}, got ${updated.name}`);
@@ -141,7 +149,7 @@ Deno.test("DELETE /:id removes a monitor", async () => {
   const app = new Hono();
   app.route("/api/monitors", monitorsRouter);
 
-  const res = await app.request("/api/monitors/1", {
+  const res = await app.request(`/api/monitors/${monitorId}`, {
     method: "DELETE",
   });
   if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
@@ -149,7 +157,7 @@ Deno.test("DELETE /:id removes a monitor", async () => {
     throw new Error(`Expected ${true}, got ${(await res.json()).success}`);
   }
 
-  const getRes = await app.request("/api/monitors/1");
+  const getRes = await app.request(`/api/monitors/${monitorId}`);
   if (getRes.status !== 404) {
     throw new Error(`Expected ${404}, got ${getRes.status}`);
   }
