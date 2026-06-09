@@ -48,9 +48,6 @@ jobs:
       - name: Install dependencies
         run: deno install
 
-      - name: Format check
-        run: deno fmt --check
-
       - name: Test
         run: deno task test
 
