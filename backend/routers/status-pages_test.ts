@@ -1,4 +1,3 @@
-import { assertEquals, assertExists } from "@std/assert";
 import { Hono } from "hono";
 import { statusPagesRouter } from "./status-pages.ts";
 Deno.test("status pages router setup", () => {});
@@ -8,10 +7,12 @@ Deno.test("GET / returns empty list initially", async () => {
   app.route("/api/status-pages", statusPagesRouter);
 
   const res = await app.request("/api/status-pages");
-  assertEquals(res.status, 200);
+  if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
   const body = await res.json();
-  assertEquals(Array.isArray(body), true);
-  assertEquals(body.length, 0);
+  if (Array.isArray(body) !== true) {
+    throw new Error(`Expected ${true}, got ${Array.isArray(body)}`);
+  }
+  if (body.length !== 0) throw new Error(`Expected ${0}, got ${body.length}`);
 });
 
 Deno.test("POST / creates a status page", async () => {
@@ -28,11 +29,17 @@ Deno.test("POST / creates a status page", async () => {
       monitor_ids: [1, 2],
     }),
   });
-  assertEquals(res.status, 201);
+  if (res.status !== 201) throw new Error(`Expected ${201}, got ${res.status}`);
   const body = await res.json();
-  assertExists(body.id);
-  assertEquals(body.title, "My Status Page");
-  assertEquals(body.slug, "my-status");
+  if (body.id == null) {
+    throw new Error(`Expected value to exist, got ${body.id}`);
+  }
+  if (body.title !== "My Status Page") {
+    throw new Error(`Expected ${"My Status Page"}, got ${body.title}`);
+  }
+  if (body.slug !== "my-status") {
+    throw new Error(`Expected ${"my-status"}, got ${body.slug}`);
+  }
 });
 
 Deno.test("POST / validates required fields", async () => {
@@ -44,7 +51,7 @@ Deno.test("POST / validates required fields", async () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({}),
   });
-  assertEquals(res.status, 500);
+  if (res.status !== 500) throw new Error(`Expected ${500}, got ${res.status}`);
 });
 
 Deno.test("GET /:id returns single status page", async () => {
@@ -52,10 +59,12 @@ Deno.test("GET /:id returns single status page", async () => {
   app.route("/api/status-pages", statusPagesRouter);
 
   const res = await app.request("/api/status-pages/1");
-  assertEquals(res.status, 200);
+  if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
   const body = await res.json();
-  assertEquals(body.id, 1);
-  assertEquals(body.title, "My Status Page");
+  if (body.id !== 1) throw new Error(`Expected ${1}, got ${body.id}`);
+  if (body.title !== "My Status Page") {
+    throw new Error(`Expected ${"My Status Page"}, got ${body.title}`);
+  }
 });
 
 Deno.test("GET /:id returns 404 for non-existent", async () => {
@@ -63,7 +72,7 @@ Deno.test("GET /:id returns 404 for non-existent", async () => {
   app.route("/api/status-pages", statusPagesRouter);
 
   const res = await app.request("/api/status-pages/999");
-  assertEquals(res.status, 404);
+  if (res.status !== 404) throw new Error(`Expected ${404}, got ${res.status}`);
 });
 
 Deno.test("PUT /:id updates a status page", async () => {
@@ -80,13 +89,19 @@ Deno.test("PUT /:id updates a status page", async () => {
       monitor_ids: [1],
     }),
   });
-  assertEquals(res.status, 200);
-  assertEquals((await res.json()).success, true);
+  if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
+  if ((await res.json()).success !== true) {
+    throw new Error(`Expected ${true}, got ${(await res.json()).success}`);
+  }
 
   const getRes = await app.request("/api/status-pages/1");
   const body = await getRes.json();
-  assertEquals(body.title, "Updated Status Page");
-  assertEquals(body.slug, "updated-status");
+  if (body.title !== "Updated Status Page") {
+    throw new Error(`Expected ${"Updated Status Page"}, got ${body.title}`);
+  }
+  if (body.slug !== "updated-status") {
+    throw new Error(`Expected ${"updated-status"}, got ${body.slug}`);
+  }
 });
 
 Deno.test("DELETE /:id removes a status page", async () => {
@@ -96,11 +111,15 @@ Deno.test("DELETE /:id removes a status page", async () => {
   const res = await app.request("/api/status-pages/1", {
     method: "DELETE",
   });
-  assertEquals(res.status, 200);
-  assertEquals((await res.json()).success, true);
+  if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
+  if ((await res.json()).success !== true) {
+    throw new Error(`Expected ${true}, got ${(await res.json()).success}`);
+  }
 
   const getRes = await app.request("/api/status-pages/1");
-  assertEquals(getRes.status, 404);
+  if (getRes.status !== 404) {
+    throw new Error(`Expected ${404}, got ${getRes.status}`);
+  }
 });
 
 Deno.test("teardown", () => {

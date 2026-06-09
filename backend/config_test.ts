@@ -1,4 +1,3 @@
-import { assertEquals } from "@std/assert";
 import { loadConfig } from "./config.ts";
 
 Deno.test("config returns default values when env not set", () => {
@@ -9,8 +8,12 @@ Deno.test("config returns default values when env not set", () => {
 
   try {
     const config = loadConfig();
-    assertEquals(config.port, 3000);
-    assertEquals(config.dbPath, "./data/arche.db");
+    if (config.port !== 3000) {
+      throw new Error(`Expected 3000, got ${config.port}`);
+    }
+    if (config.dbPath !== "./data/arche.db") {
+      throw new Error(`Expected ./data/arche.db, got ${config.dbPath}`);
+    }
   } finally {
     if (origPort) Deno.env.set("PORT", origPort);
     if (origDbPath) Deno.env.set("DB_PATH", origDbPath);
@@ -25,8 +28,12 @@ Deno.test("config reads PORT and DB_PATH env vars", () => {
 
   try {
     const config = loadConfig();
-    assertEquals(config.port, 4000);
-    assertEquals(config.dbPath, "/tmp/test.db");
+    if (config.port !== 4000) {
+      throw new Error(`Expected 4000, got ${config.port}`);
+    }
+    if (config.dbPath !== "/tmp/test.db") {
+      throw new Error(`Expected /tmp/test.db, got ${config.dbPath}`);
+    }
   } finally {
     if (origPort) Deno.env.set("PORT", origPort);
     else Deno.env.delete("PORT");

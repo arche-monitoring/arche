@@ -1,4 +1,3 @@
-import { assertEquals, assertExists } from "@std/assert";
 import {
   authMiddleware,
   hashPassword,
@@ -14,16 +13,18 @@ setJwtSecret(TEST_SECRET);
 
 Deno.test("signToken and verifyToken round-trip", async () => {
   const token = await signToken("alice");
-  assertExists(token);
-  assertEquals(typeof token, "string");
+  if (token == null) throw new Error(`Expected value to exist, got ${token}`);
+  if (typeof token !== "string") {
+    throw new Error(`Expected string, got ${typeof token}`);
+  }
 
   const username = await verifyToken(token);
-  assertEquals(username, "alice");
+  if (username !== "alice") throw new Error(`Expected alice, got ${username}`);
 });
 
 Deno.test("verifyToken returns null for invalid token", async () => {
   const result = await verifyToken("not-a-valid-jwt");
-  assertEquals(result, null);
+  if (result !== null) throw new Error(`Expected null, got ${result}`);
 });
 
 Deno.test("verifyToken returns null for tampered token", async () => {
@@ -31,25 +32,27 @@ Deno.test("verifyToken returns null for tampered token", async () => {
   const prefix = token.split(".").slice(0, 2).join(".");
   const tampered = prefix + ".invalidsignature";
   const result = await verifyToken(tampered);
-  assertEquals(result, null);
+  if (result !== null) throw new Error(`Expected null, got ${result}`);
 });
 
 Deno.test("hashPassword and verifyPassword round-trip", async () => {
   const password = "hunter2";
   const hashed = await hashPassword(password);
-  assertExists(hashed);
-  assertEquals(hashed.split(":").length, 2);
+  if (hashed == null) throw new Error(`Expected value to exist, got ${hashed}`);
+  if (hashed.split(":").length !== 2) {
+    throw new Error(`Expected 2, got ${hashed.split(":").length}`);
+  }
 
   const valid = await verifyPassword(password, hashed);
-  assertEquals(valid, true);
+  if (valid !== true) throw new Error(`Expected true, got ${valid}`);
 
   const invalid = await verifyPassword("wrong", hashed);
-  assertEquals(invalid, false);
+  if (invalid !== false) throw new Error(`Expected false, got ${invalid}`);
 });
 
 Deno.test("verifyPassword returns false for malformed hash", async () => {
   const result = await verifyPassword("pass", "invalid-hash");
-  assertEquals(result, false);
+  if (result !== false) throw new Error(`Expected false, got ${result}`);
 });
 
 Deno.test("rateLimit returns 429 after max attempts", async () => {
@@ -88,7 +91,7 @@ Deno.test("authMiddleware allows public paths", async () => {
     nextCalled = true;
     return Promise.resolve();
   });
-  assertEquals(nextCalled, true);
+  if (!nextCalled) throw new Error(`Expected true, got ${nextCalled}`);
 });
 
 Deno.test("authMiddleware rejects missing Authorization header", async () => {
@@ -107,7 +110,7 @@ Deno.test("authMiddleware rejects missing Authorization header", async () => {
     nextCalled = true;
     return Promise.resolve();
   });
-  assertEquals(nextCalled, false);
+  if (nextCalled) throw new Error(`Expected false, got ${nextCalled}`);
 });
 
 Deno.test("authMiddleware rejects invalid Bearer token", async () => {
@@ -126,7 +129,7 @@ Deno.test("authMiddleware rejects invalid Bearer token", async () => {
     nextCalled = true;
     return Promise.resolve();
   });
-  assertEquals(nextCalled, false);
+  if (nextCalled) throw new Error(`Expected false, got ${nextCalled}`);
 });
 
 Deno.test("authMiddleware allows valid Bearer token", async () => {
@@ -147,7 +150,7 @@ Deno.test("authMiddleware allows valid Bearer token", async () => {
     nextCalled = true;
     return Promise.resolve();
   });
-  assertEquals(nextCalled, true);
+  if (!nextCalled) throw new Error(`Expected true, got ${nextCalled}`);
 });
 
 Deno.test("authMiddleware allows public /api/auth/* paths", async () => {
@@ -166,7 +169,7 @@ Deno.test("authMiddleware allows public /api/auth/* paths", async () => {
     nextCalled = true;
     return Promise.resolve();
   });
-  assertEquals(nextCalled, true);
+  if (!nextCalled) throw new Error(`Expected true, got ${nextCalled}`);
 });
 
 Deno.test("authMiddleware allows public /api/public/* paths", async () => {
@@ -185,5 +188,5 @@ Deno.test("authMiddleware allows public /api/public/* paths", async () => {
     nextCalled = true;
     return Promise.resolve();
   });
-  assertEquals(nextCalled, true);
+  if (!nextCalled) throw new Error(`Expected true, got ${nextCalled}`);
 });
