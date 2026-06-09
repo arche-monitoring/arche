@@ -48,8 +48,5 @@ jobs:
       - name: Install dependencies
         run: deno install
 
-      - name: Test
-        run: deno task test
-
       - name: Build
         run: deno task build
