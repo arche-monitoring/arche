@@ -1,4 +1,3 @@
-import { assertEquals } from "@std/assert";
 import { fetchFavicon } from "./favicon.ts";
 
 Deno.test("fetchFavicon returns null for invalid domain", async () => {
@@ -9,7 +8,7 @@ Deno.test("fetchFavicon returns null for invalid domain", async () => {
 
   try {
     const result = await fetchFavicon("nonexistent.invalid");
-    assertEquals(result, null);
+    if (result !== null) throw new Error(`Expected null, got ${result}`);
   } finally {
     globalThis.fetch = origFetch;
   }
@@ -37,8 +36,8 @@ Deno.test("fetchFavicon falls through to null when all sources fail", async () =
 
   try {
     const result = await fetchFavicon("http://example.com");
-    assertEquals(result, null);
-    assertEquals(callCount, 3);
+    if (result !== null) throw new Error(`Expected null, got ${result}`);
+    if (callCount !== 3) throw new Error(`Expected 3, got ${callCount}`);
   } finally {
     globalThis.fetch = origFetch;
   }

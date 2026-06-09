@@ -1,4 +1,3 @@
-import { assertEquals } from "@std/assert";
 import { Hono } from "hono";
 import { settingsRouter } from "./settings.ts";
 Deno.test("settings router setup", () => {});
@@ -8,9 +7,11 @@ Deno.test("GET / returns settings object", async () => {
   app.route("/api/settings", settingsRouter);
 
   const res = await app.request("/api/settings");
-  assertEquals(res.status, 200);
+  if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
   const body = await res.json();
-  assertEquals(typeof body, "object");
+  if (typeof body !== "object") {
+    throw new Error(`Expected ${"object"}, got ${typeof body}`);
+  }
 });
 
 Deno.test("PUT / updates settings", async () => {
@@ -25,13 +26,21 @@ Deno.test("PUT / updates settings", async () => {
       notification_email: "test@example.com",
     }),
   });
-  assertEquals(res.status, 200);
-  assertEquals((await res.json()).success, true);
+  if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
+  if ((await res.json()).success !== true) {
+    throw new Error(`Expected ${true}, got ${(await res.json()).success}`);
+  }
 
   const getRes = await app.request("/api/settings");
   const body = await getRes.json();
-  assertEquals(body.retention_days, "90");
-  assertEquals(body.notification_email, "test@example.com");
+  if (body.retention_days !== "90") {
+    throw new Error(`Expected ${"90"}, got ${body.retention_days}`);
+  }
+  if (body.notification_email !== "test@example.com") {
+    throw new Error(
+      `Expected ${"test@example.com"}, got ${body.notification_email}`,
+    );
+  }
 });
 
 Deno.test("PUT / merges with existing settings", async () => {
@@ -45,12 +54,18 @@ Deno.test("PUT / merges with existing settings", async () => {
       retention_days: "30",
     }),
   });
-  assertEquals(res.status, 200);
+  if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
 
   const getRes = await app.request("/api/settings");
   const body = await getRes.json();
-  assertEquals(body.retention_days, "30");
-  assertEquals(body.notification_email, "test@example.com");
+  if (body.retention_days !== "30") {
+    throw new Error(`Expected ${"30"}, got ${body.retention_days}`);
+  }
+  if (body.notification_email !== "test@example.com") {
+    throw new Error(
+      `Expected ${"test@example.com"}, got ${body.notification_email}`,
+    );
+  }
 });
 
 Deno.test("teardown", () => {

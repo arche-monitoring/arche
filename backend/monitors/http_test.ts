@@ -1,4 +1,3 @@
-import { assertEquals, assertExists } from "@std/assert";
 import { checkHttp } from "./http.ts";
 
 Deno.test("checkHttp returns up when status matches expected", async () => {
@@ -12,10 +11,18 @@ Deno.test("checkHttp returns up when status matches expected", async () => {
       expectedStatus: 200,
       timeout: 5,
     });
-    assertEquals(result.status, "up");
-    assertEquals(result.statusCode, 200);
-    assertExists(result.responseTimeMs);
-    assertEquals(typeof result.responseTimeMs, "number");
+    if (result.status !== "up") {
+      throw new Error(`Expected up, got ${result.status}`);
+    }
+    if (result.statusCode !== 200) {
+      throw new Error(`Expected 200, got ${result.statusCode}`);
+    }
+    if (result.responseTimeMs == null) {
+      throw new Error(`Expected value to exist, got ${result.responseTimeMs}`);
+    }
+    if (typeof result.responseTimeMs !== "number") {
+      throw new Error(`Expected number, got ${typeof result.responseTimeMs}`);
+    }
   } finally {
     globalThis.fetch = origFetch;
   }
@@ -33,10 +40,18 @@ Deno.test("checkHttp returns down when status mismatches", async () => {
       expectedStatus: 200,
       timeout: 5,
     });
-    assertEquals(result.status, "down");
-    assertEquals(result.statusCode, 404);
-    assertExists(result.error);
-    assertEquals(result.error, "Expected 200, got 404");
+    if (result.status !== "down") {
+      throw new Error(`Expected down, got ${result.status}`);
+    }
+    if (result.statusCode !== 404) {
+      throw new Error(`Expected 404, got ${result.statusCode}`);
+    }
+    if (result.error == null) {
+      throw new Error(`Expected value to exist, got ${result.error}`);
+    }
+    if (result.error !== "Expected 200, got 404") {
+      throw new Error(`Expected Expected 200, got 404, got ${result.error}`);
+    }
   } finally {
     globalThis.fetch = origFetch;
   }
@@ -55,9 +70,15 @@ Deno.test("checkHttp returns error on network failure", async () => {
       expectedStatus: 200,
       timeout: 5,
     });
-    assertEquals(result.status, "error");
-    assertExists(result.error);
-    assertEquals(result.error, "TypeError: fetch failed");
+    if (result.status !== "error") {
+      throw new Error(`Expected error, got ${result.status}`);
+    }
+    if (result.error == null) {
+      throw new Error(`Expected value to exist, got ${result.error}`);
+    }
+    if (result.error !== "TypeError: fetch failed") {
+      throw new Error(`Expected TypeError: fetch failed, got ${result.error}`);
+    }
   } finally {
     globalThis.fetch = origFetch;
   }
@@ -80,9 +101,17 @@ Deno.test("checkHttp works with POST method", async () => {
       expectedStatus: 201,
       timeout: 10,
     });
-    assertEquals(result.status, "up");
-    assertEquals(capturedUrl, "https://api.example.com/resource");
-    assertEquals(capturedMethod, "POST");
+    if (result.status !== "up") {
+      throw new Error(`Expected up, got ${result.status}`);
+    }
+    if (capturedUrl !== "https://api.example.com/resource") {
+      throw new Error(
+        `Expected https://api.example.com/resource, got ${capturedUrl}`,
+      );
+    }
+    if (capturedMethod !== "POST") {
+      throw new Error(`Expected POST, got ${capturedMethod}`);
+    }
   } finally {
     globalThis.fetch = origFetch;
   }

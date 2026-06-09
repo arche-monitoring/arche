@@ -1,4 +1,3 @@
-import { assertEquals, assertExists } from "@std/assert";
 import { Hono } from "hono";
 import { authRouter } from "./auth.ts";
 import { setJwtSecret } from "../middleware/auth.ts";
@@ -19,11 +18,17 @@ Deno.test("POST /setup creates first user", async () => {
     headers: { "Content-Type": "application/json", ...ip(1) },
     body: JSON.stringify({ username: "admin", password: "password123" }),
   });
-  assertEquals(res.status, 200);
+  if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
   const body = await res.json();
-  assertExists(body.token);
-  assertEquals(body.username, "admin");
-  assertEquals(typeof body.token, "string");
+  if (body.token == null) {
+    throw new Error(`Expected value to exist, got ${body.token}`);
+  }
+  if (body.username !== "admin") {
+    throw new Error(`Expected ${"admin"}, got ${body.username}`);
+  }
+  if (typeof body.token !== "string") {
+    throw new Error(`Expected ${"string"}, got ${typeof body.token}`);
+  }
 });
 
 Deno.test("POST /setup fails if already configured", async () => {
@@ -35,9 +40,13 @@ Deno.test("POST /setup fails if already configured", async () => {
     headers: { "Content-Type": "application/json", ...ip(2) },
     body: JSON.stringify({ username: "admin2", password: "password456" }),
   });
-  assertEquals(res.status, 400);
+  if (res.status !== 400) throw new Error(`Expected ${400}, got ${res.status}`);
   const body = await res.json();
-  assertEquals(body.error, "Authentication already configured");
+  if (body.error !== "Authentication already configured") {
+    throw new Error(
+      `Expected ${"Authentication already configured"}, got ${body.error}`,
+    );
+  }
 });
 
 Deno.test("POST /setup requires username and password", async () => {
@@ -49,7 +58,7 @@ Deno.test("POST /setup requires username and password", async () => {
     headers: { "Content-Type": "application/json", ...ip(3) },
     body: JSON.stringify({}),
   });
-  assertEquals(res.status, 400);
+  if (res.status !== 400) throw new Error(`Expected ${400}, got ${res.status}`);
 });
 
 Deno.test("POST /login returns token for valid credentials", async () => {
@@ -61,10 +70,14 @@ Deno.test("POST /login returns token for valid credentials", async () => {
     headers: { "Content-Type": "application/json", ...ip(10) },
     body: JSON.stringify({ username: "admin", password: "password123" }),
   });
-  assertEquals(res.status, 200);
+  if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
   const body = await res.json();
-  assertExists(body.token);
-  assertEquals(body.username, "admin");
+  if (body.token == null) {
+    throw new Error(`Expected value to exist, got ${body.token}`);
+  }
+  if (body.username !== "admin") {
+    throw new Error(`Expected ${"admin"}, got ${body.username}`);
+  }
 });
 
 Deno.test("POST /login rejects wrong password", async () => {
@@ -76,9 +89,13 @@ Deno.test("POST /login rejects wrong password", async () => {
     headers: { "Content-Type": "application/json", ...ip(11) },
     body: JSON.stringify({ username: "admin", password: "wrong" }),
   });
-  assertEquals(res.status, 401);
+  if (res.status !== 401) throw new Error(`Expected ${401}, got ${res.status}`);
   const body = await res.json();
-  assertEquals(body.error, "Invalid username or password");
+  if (body.error !== "Invalid username or password") {
+    throw new Error(
+      `Expected ${"Invalid username or password"}, got ${body.error}`,
+    );
+  }
 });
 
 Deno.test("POST /login rejects unknown user", async () => {
@@ -90,7 +107,7 @@ Deno.test("POST /login rejects unknown user", async () => {
     headers: { "Content-Type": "application/json", ...ip(12) },
     body: JSON.stringify({ username: "nobody", password: "password123" }),
   });
-  assertEquals(res.status, 401);
+  if (res.status !== 401) throw new Error(`Expected ${401}, got ${res.status}`);
 });
 
 Deno.test("POST /login requires username and password", async () => {
@@ -102,7 +119,7 @@ Deno.test("POST /login requires username and password", async () => {
     headers: { "Content-Type": "application/json", ...ip(13) },
     body: JSON.stringify({}),
   });
-  assertEquals(res.status, 400);
+  if (res.status !== 400) throw new Error(`Expected ${400}, got ${res.status}`);
 });
 
 Deno.test("GET /me returns authenticated=true with valid token", async () => {
@@ -119,10 +136,14 @@ Deno.test("GET /me returns authenticated=true with valid token", async () => {
   const res = await app.request("/api/auth/me", {
     headers: { Authorization: `Bearer ${token}`, ...ip(15) },
   });
-  assertEquals(res.status, 200);
+  if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
   const body = await res.json();
-  assertEquals(body.authenticated, true);
-  assertEquals(body.username, "admin");
+  if (body.authenticated !== true) {
+    throw new Error(`Expected ${true}, got ${body.authenticated}`);
+  }
+  if (body.username !== "admin") {
+    throw new Error(`Expected ${"admin"}, got ${body.username}`);
+  }
 });
 
 Deno.test("GET /me returns authenticated=false without token", async () => {
@@ -130,9 +151,11 @@ Deno.test("GET /me returns authenticated=false without token", async () => {
   app.route("/api/auth", authRouter);
 
   const res = await app.request("/api/auth/me");
-  assertEquals(res.status, 200);
+  if (res.status !== 200) throw new Error(`Expected ${200}, got ${res.status}`);
   const body = await res.json();
-  assertEquals(body.authenticated, false);
+  if (body.authenticated !== false) {
+    throw new Error(`Expected ${false}, got ${body.authenticated}`);
+  }
 });
 
 Deno.test("POST /logout returns success", async () => {
@@ -150,10 +173,14 @@ Deno.test("POST /logout returns success", async () => {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, ...ip(17) },
   });
-  assertEquals(logoutRes.status, 200);
+  if (logoutRes.status !== 200) {
+    throw new Error(`Expected ${200}, got ${logoutRes.status}`);
+  }
 
   const body = await logoutRes.json();
-  assertEquals(body.success, true);
+  if (body.success !== true) {
+    throw new Error(`Expected ${true}, got ${body.success}`);
+  }
 });
 
 Deno.test("POST /change-credentials updates username and password", async () => {
@@ -180,17 +207,25 @@ Deno.test("POST /change-credentials updates username and password", async () => 
       newPassword: "newpassword456",
     }),
   });
-  assertEquals(changeRes.status, 200);
+  if (changeRes.status !== 200) {
+    throw new Error(`Expected ${200}, got ${changeRes.status}`);
+  }
   const changeBody = await changeRes.json();
-  assertExists(changeBody.token);
-  assertEquals(changeBody.username, "newadmin");
+  if (changeBody.token == null) {
+    throw new Error(`Expected value to exist, got ${changeBody.token}`);
+  }
+  if (changeBody.username !== "newadmin") {
+    throw new Error(`Expected ${"newadmin"}, got ${changeBody.username}`);
+  }
 
   const loginWithNew = await app.request("/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json", ...ip(20) },
     body: JSON.stringify({ username: "newadmin", password: "newpassword456" }),
   });
-  assertEquals(loginWithNew.status, 200);
+  if (loginWithNew.status !== 200) {
+    throw new Error(`Expected ${200}, got ${loginWithNew.status}`);
+  }
 });
 
 Deno.test("POST /change-credentials rejects wrong current password", async () => {
@@ -217,7 +252,7 @@ Deno.test("POST /change-credentials rejects wrong current password", async () =>
       newPassword: "pass",
     }),
   });
-  assertEquals(res.status, 401);
+  if (res.status !== 401) throw new Error(`Expected ${401}, got ${res.status}`);
 });
 
 Deno.test("teardown", () => {
