@@ -4,46 +4,34 @@ import { migrate } from "drizzle-orm/sqlite-proxy/migrator";
 import { loadConfig } from "../config.ts";
 import { logger } from "../utils/logger.ts";
 
-type Params = (string | number | boolean | null)[] | undefined;
+const config = loadConfig();
+const dir = config.dbPath.substring(0, config.dbPath.lastIndexOf("/"));
+if (dir) Deno.mkdirSync(dir, { recursive: true });
 
-let dbInstance: ReturnType<typeof drizzle> | null = null;
-let rawDb: DB | null = null;
+const rawDb = new DB(config.dbPath);
+rawDb.execute("PRAGMA journal_mode=WAL");
+rawDb.execute("PRAGMA foreign_keys=ON");
 
-export async function getDb() {
-  if (!dbInstance) {
-    const config = loadConfig();
-    const dir = config.dbPath.substring(0, config.dbPath.lastIndexOf("/"));
-    if (dir) Deno.mkdirSync(dir, { recursive: true });
-
-    rawDb = new DB(config.dbPath);
-    rawDb.execute("PRAGMA journal_mode=WAL");
-    rawDb.execute("PRAGMA foreign_keys=ON");
-
-    // deno-lint-ignore require-await
-    dbInstance = drizzle(async (sql, params, _method) => {
-      try {
-        const rows = rawDb!.query(sql, params as Params);
-        return { rows: rows as unknown as Record<string, unknown>[] };
-      } catch (e) {
-        logger.error("SQL error:", e);
-        throw e;
-      }
-    });
-
-    // deno-lint-ignore require-await
-    await migrate(
-      dbInstance,
-      async (queries) => {
-        for (const query of queries) {
-          rawDb!.execute(query);
-        }
-      },
-      { migrationsFolder: "./backend/database/drizzle" },
-    );
-
-    logger.info(`Database initialized at ${config.dbPath}`);
+// deno-lint-ignore require-await
+export const db = drizzle(async (sql, params, _method) => {
+  try {
+    const rows = rawDb.query(sql, params);
+    return { rows: rows as unknown as Record<string, unknown>[] };
+  } catch (e) {
+    logger.error("SQL error:", e);
+    throw e;
   }
-  return dbInstance;
-}
+});
 
-export const db = await getDb();
+await migrate(
+  db,
+  // deno-lint-ignore require-await
+  async (queries) => {
+    for (const query of queries) {
+      rawDb.execute(query);
+    }
+  },
+  { migrationsFolder: "./backend/database/drizzle" },
+);
+
+logger.info(`Database initialized at ${config.dbPath}`);
